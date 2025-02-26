@@ -10,7 +10,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'ISpy Game',
+      title: 'Scavenger Hunt of PFT',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.red),
         useMaterial3: true,
@@ -85,7 +85,7 @@ class _StartPageState extends State<StartPage> {
                       'Start',
                       style: TextStyle(
                         fontSize: 30, // Larger font size
-                        color: Color.fromARGB(255, 0, 0, 0), // Red color for the text
+                        color: Color.fromARGB(255, 86, 29, 124), // Red color for the text
                       ),
                     ),
                   ),
@@ -162,7 +162,7 @@ class _ISpyPageState extends State<ISpyPage> {
       body: Column(
         children: [
           Container(
-            color: const Color.fromARGB(255, 228, 108, 108), 
+            color: const Color.fromARGB(186, 86, 29, 124), 
             width: double.infinity, 
             padding: const EdgeInsets.symmetric(vertical: 5),
             child: Column(
@@ -267,7 +267,7 @@ class _ISpyPageState extends State<ISpyPage> {
                         child: Text(
                           'Give Up',
                           style: TextStyle(
-                            color: Colors.red, // Change text color to red
+                            color: const Color.fromARGB(255, 86, 29, 124), // Change text color to red
                             fontSize: 19
                           ),
                         ),
