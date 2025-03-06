@@ -84,7 +84,7 @@ class _StartPageState extends State<StartPage> {
                     child: const Text(
                       'Start',
                       style: TextStyle(
-                        fontSize: 30, // Larger font size
+                        fontSize: 60, // Larger font size
                         color: Color.fromARGB(255, 86, 29, 124), // Red color for the text
                       ),
                     ),
@@ -118,7 +118,7 @@ class ISpyPage extends StatefulWidget {
   ];
 
   static const List<Offset> correctPositions = [
-    Offset(192, 560),
+    Offset(398, 485),
     Offset(120, 400),
     Offset(75, 825),
     Offset(560, 600),
@@ -131,16 +131,16 @@ class ISpyPage extends StatefulWidget {
   ];
 
   static const List<String> objectNames = [
-    'A Tiny Pink Shoe',
-    'Fred\'s Feather', 
-    'A Small Plastic Chicken', 
-    'A Girl on a Swing', 
-    'A Pair of Small Nail Clippers',
-    'A Gold Star', 
-    'A Button with a Square on It', 
-    'A Small Turtle', 
-    'A Pair of Miniature Sunglasses', 
-    'A Shell from the Ocean'
+    'What could I use to enter the doors of Patrick F. Taylor Hall?',
+    'ENTER SCAVENGE TEXT', 
+    'ENTER SCAVENGE TEXT',
+    'ENTER SCAVENGE TEXT',
+    'ENTER SCAVENGE TEXT',
+    'ENTER SCAVENGE TEXT',
+    'ENTER SCAVENGE TEXT',
+    'ENTER SCAVENGE TEXT',
+    'ENTER SCAVENGE TEXT',
+    'ENTER SCAVENGE TEXT',
   ];
 
   const ISpyPage({super.key, required this.index, required this.objectsFound, required this.stopwatch});
@@ -168,18 +168,18 @@ class _ISpyPageState extends State<ISpyPage> {
             child: Column(
               children: [
                 Text(
-                  'I spy ${ISpyPage.objectNames[widget.index]}!',
+                  '${ISpyPage.objectNames[widget.index]}',
                   style: const TextStyle(
-                    fontSize: 27,
+                    fontSize: 45,
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
                   ),
                 ),
                 const SizedBox(height: 5),
                 Text(
-                  'Objects Found: ${widget.objectsFound}',
+                  'Items "Scavenged" -  ${widget.objectsFound}',
                   style: const TextStyle(
-                    fontSize: 19,
+                    fontSize: 30,
                     fontWeight: FontWeight.bold,
                     color: Color.fromARGB(255, 0, 0, 0), 
                   ),
@@ -200,7 +200,7 @@ class _ISpyPageState extends State<ISpyPage> {
                     Positioned.fill(
                       child: Image.asset(
                         ISpyPage.images[widget.index],
-                        fit: BoxFit.fill,
+                        fit: BoxFit.fitHeight,
                       ),
                     ),
                     Positioned(
@@ -236,7 +236,7 @@ class _ISpyPageState extends State<ISpyPage> {
                           decoration: BoxDecoration(
                             color: Colors.transparent,
                             border: Border.all(
-                              color: _isClicked ? Colors.red : Colors.transparent, // Change to red when clicked
+                              color: _isClicked ? Colors.red : const Color.fromARGB(255, 247, 0, 255), // Change to red when clicked
                               width: _isClicked ? 6 : 3, // Thicker border when clicked
                             ),
                             shape: BoxShape.circle, // Make it circular
@@ -268,7 +268,7 @@ class _ISpyPageState extends State<ISpyPage> {
                           'Give Up',
                           style: TextStyle(
                             color: const Color.fromARGB(255, 86, 29, 124), // Change text color to red
-                            fontSize: 19
+                            fontSize: 35
                           ),
                         ),
                       ),
