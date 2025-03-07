@@ -71,6 +71,7 @@ class _StartPageState extends State<StartPage> {
             children: [
               SizedBox(
                 width: double.infinity,
+                height: MediaQuery.of(context).size.height,
                 child: FittedBox( // Ensures image fits within screen bounds
                   fit: BoxFit.contain,
                   child: Image.asset('images/cover.png'), // Your start image here
