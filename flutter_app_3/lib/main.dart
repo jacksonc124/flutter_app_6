@@ -118,15 +118,15 @@ class ISpyPage extends StatefulWidget {
   ];
 
   static const List<Offset> correctPositions = [
-    Offset(398, 485),
-    Offset(120, 400),
-    Offset(75, 825),
-    Offset(560, 600),
-    Offset(620, 370),
-    Offset(125, 220),
-    Offset(510, 700),
+    Offset(370, 450),
+    Offset(300, 450),
+    Offset(370, 725),
+    Offset(450, 350),
+    Offset(215, 200),
+    Offset(135, 220),
+    Offset(130, 840),
     Offset(575, 150),
-    Offset(123, 155),
+    Offset(200, 280),
     Offset(310, 575)
   ];
 
@@ -134,10 +134,10 @@ class ISpyPage extends StatefulWidget {
     'What could I use to enter the doors of Patrick F. Taylor Hall?',
     'What can I find on the second floor?', 
     'What is the year the engineering honors society started?',
-    'Where can I go get food after class?',
-    'Where can I sit down to do some work?',
-    'Where can I see my classes information?',
-    'WWhere should the missing brick go?',
+    'Where can I order food between classes?',
+    'Where can I get my tiger card?',
+    'What is on my class door?',
+    'Where should the missing brick go?',
     'Where can I find a building camera?',
     'Where can I find a 3D printer?',
     'What Happened To The Ceiling Tile??',
@@ -236,7 +236,7 @@ class _ISpyPageState extends State<ISpyPage> {
                           decoration: BoxDecoration(
                             color: Colors.transparent,
                             border: Border.all(
-                              color: _isClicked ? Colors.red : const Color.fromARGB(255, 247, 0, 255), // Change to red when clicked
+                              color: _isClicked ? Colors.red : const Color.fromARGB(24, 247, 0, 255), // Change to red when clicked
                               width: _isClicked ? 6 : 3, // Thicker border when clicked
                             ),
                             shape: BoxShape.circle, // Make it circular
