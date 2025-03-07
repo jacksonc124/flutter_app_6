@@ -132,15 +132,15 @@ class ISpyPage extends StatefulWidget {
 
   static const List<String> objectNames = [
     'What could I use to enter the doors of Patrick F. Taylor Hall?',
-    'ENTER SCAVENGE TEXT', 
-    'ENTER SCAVENGE TEXT',
-    'ENTER SCAVENGE TEXT',
-    'ENTER SCAVENGE TEXT',
-    'ENTER SCAVENGE TEXT',
-    'ENTER SCAVENGE TEXT',
-    'ENTER SCAVENGE TEXT',
-    'ENTER SCAVENGE TEXT',
-    'ENTER SCAVENGE TEXT',
+    'What can I find on the second floor?', 
+    'What is the year the engineering honors society started?',
+    'Where can I go get food after class?',
+    'Where can I sit down to do some work?',
+    'Where can I see my classes information?',
+    'WWhere should the missing brick go?',
+    'Where can I find a building camera?',
+    'Where can I find a 3D printer?',
+    'What Happened To The Ceiling Tile??',
   ];
 
   const ISpyPage({super.key, required this.index, required this.objectsFound, required this.stopwatch});
@@ -168,7 +168,7 @@ class _ISpyPageState extends State<ISpyPage> {
             child: Column(
               children: [
                 Text(
-                  '${ISpyPage.objectNames[widget.index]}',
+                  ISpyPage.objectNames[widget.index],
                   style: const TextStyle(
                     fontSize: 45,
                     fontWeight: FontWeight.bold,
