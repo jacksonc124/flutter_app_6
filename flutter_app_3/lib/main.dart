@@ -53,7 +53,7 @@ class _StartPageState extends State<StartPage> {
         _gameStarted = true;
       });
       _stopwatch.start();
-      // Navigate to the ISpyPage with the provided player name using a standard transition
+      // Navigate to the ISpyPage with the provided player name using standard transition
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
@@ -155,14 +155,8 @@ class _StartPageState extends State<StartPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // Hiding the default app bar
+      // Hide default app bar (toolbarHeight set to 0)
       appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.of(context).pop(); // Back button functionality
-          },
-        ),
         automaticallyImplyLeading: false,
         toolbarHeight: 0,
       ),
@@ -315,7 +309,7 @@ class _ISpyPageState extends State<ISpyPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // Hiding the default app bar
+      // Hide default app bar (toolbarHeight set to 0)
       appBar: AppBar(
         automaticallyImplyLeading: false,
         toolbarHeight: 0,
@@ -438,20 +432,6 @@ class _ISpyPageState extends State<ISpyPage> {
                             color: Color.fromARGB(255, 86, 29, 124),
                             fontSize: 35,
                           ),
-                        ),
-                      ),
-                    ),
-                    // Back button
-                    Positioned(
-                      top: 20,
-                      left: 20,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                        child: const Icon(
-                          Icons.arrow_back,
-                          color: Colors.black,
                         ),
                       ),
                     ),
