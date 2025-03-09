@@ -282,9 +282,9 @@ class ISpyPage extends StatefulWidget {
   // Object names/questions for each page
   static const List<String> objectNames = [
     'What could I use to enter the doors of Patrick F. Taylor Hall?',
-    'What;s something strange I can find on the second floor?',
+    'What is something strange I can find on the second floor?',
     'What is the year the engineering honors society started?',
-    'Where can I order my food on between classes?',
+    'What can I order my food on between classes?',
     'Where can I get my tiger card?',
     'What is taped to my class door?',
     'Where should the missing brick go?',
