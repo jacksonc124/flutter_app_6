@@ -47,7 +47,21 @@ class _StartPageState extends State<StartPage> {
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
-        builder: (context) => ISpyPage(index: 0, objectsFound: 0, stopwatch: _stopwatch),
+        builder: (context) =>
+            ISpyPage(index: 0, objectsFound: 0, stopwatch: _stopwatch),
+      ),
+    );
+  }
+
+  void _restartGame() {
+    setState(() {
+      _gameStarted = false;
+      _stopwatch.reset();
+    });
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const StartPage(),
       ),
     );
   }
@@ -65,33 +79,56 @@ class _StartPageState extends State<StartPage> {
         automaticallyImplyLeading: false, // Removes the default back button
         toolbarHeight: 0, // Removes the top box (app bar height)
       ),
-      body: SingleChildScrollView( // Added scrollable view
+      body: SingleChildScrollView(
+        // Added scrollable view
         child: Center(
           child: Stack(
             children: [
               SizedBox(
                 width: double.infinity,
                 height: MediaQuery.of(context).size.height,
-                child: FittedBox( // Ensures image fits within screen bounds
+                child: FittedBox(
+                  // Ensures image fits within screen bounds
                   fit: BoxFit.contain,
-                  child: Image.asset('images/cover.png'), // Your start image here
+                  child:
+                      Image.asset('images/cover.png'), // Your start image here
                 ),
               ),
               Center(
                 child: Positioned(
-                  bottom: MediaQuery.of(context).size.height * 0.25, // 3/4 of the screen height from the top
+                  bottom: MediaQuery.of(context).size.height *
+                      0.25, // 3/4 of the screen height from the top
                   child: ElevatedButton(
-                    onPressed: _gameStarted ? null : _startGame, // Disable button if game has started
+                    onPressed: _gameStarted
+                        ? null
+                        : _startGame, // Disable button if game has started
                     child: const Text(
                       'Start',
                       style: TextStyle(
                         fontSize: 60, // Larger font size
-                        color: Color.fromARGB(255, 86, 29, 124), // Red color for the text
+                        color: Color.fromARGB(
+                            255, 86, 29, 124), // Red color for the text
                       ),
                     ),
                   ),
                 ),
               ),
+              // Display Restart button only if the game has started
+              if (_gameStarted)
+                Positioned(
+                  bottom: 20,
+                  right: 20,
+                  child: ElevatedButton(
+                    onPressed: _restartGame, // Restart button
+                    child: const Text(
+                      'Restart',
+                      style: TextStyle(
+                        fontSize: 30,
+                        color: Color.fromARGB(255, 86, 29, 124),
+                      ),
+                    ),
+                  ),
+                ),
             ],
           ),
         ),
@@ -133,7 +170,7 @@ class ISpyPage extends StatefulWidget {
 
   static const List<String> objectNames = [
     'What could I use to enter the doors of Patrick F. Taylor Hall?',
-    'What can I find on the second floor?', 
+    'What can I find on the second floor?',
     'What is the year the engineering honors society started?',
     'Where can I order food between classes?',
     'Where can I get my tiger card?',
@@ -144,7 +181,11 @@ class ISpyPage extends StatefulWidget {
     'What Happened To The Ceiling Tile??',
   ];
 
-  const ISpyPage({super.key, required this.index, required this.objectsFound, required this.stopwatch});
+  const ISpyPage(
+      {super.key,
+      required this.index,
+      required this.objectsFound,
+      required this.stopwatch});
 
   @override
   _ISpyPageState createState() => _ISpyPageState();
@@ -163,8 +204,8 @@ class _ISpyPageState extends State<ISpyPage> {
       body: Column(
         children: [
           Container(
-            color: const Color.fromARGB(186, 86, 29, 124), 
-            width: double.infinity, 
+            color: const Color.fromARGB(186, 86, 29, 124),
+            width: double.infinity,
             padding: const EdgeInsets.symmetric(vertical: 5),
             child: Column(
               children: [
@@ -182,7 +223,7 @@ class _ISpyPageState extends State<ISpyPage> {
                   style: const TextStyle(
                     fontSize: 30,
                     fontWeight: FontWeight.bold,
-                    color: Color.fromARGB(255, 0, 0, 0), 
+                    color: Color.fromARGB(255, 0, 0, 0),
                   ),
                 ),
               ],
@@ -193,8 +234,10 @@ class _ISpyPageState extends State<ISpyPage> {
               builder: (context, constraints) {
                 double scaleX = constraints.maxWidth / 800;
                 double scaleY = constraints.maxHeight / 920;
-                double correctX = ISpyPage.correctPositions[widget.index].dx * scaleX;
-                double correctY = ISpyPage.correctPositions[widget.index].dy * scaleY;
+                double correctX =
+                    ISpyPage.correctPositions[widget.index].dx * scaleX;
+                double correctY =
+                    ISpyPage.correctPositions[widget.index].dy * scaleY;
 
                 return Stack(
                   children: [
@@ -237,8 +280,13 @@ class _ISpyPageState extends State<ISpyPage> {
                           decoration: BoxDecoration(
                             color: Colors.transparent,
                             border: Border.all(
-                              color: _isClicked ? Colors.red : const Color.fromARGB(24, 247, 0, 255), // Change to red when clicked
-                              width: _isClicked ? 6 : 3, // Thicker border when clicked
+                              color: _isClicked
+                                  ? Colors.red
+                                  : const Color.fromARGB(24, 247, 0,
+                                      255), // Change to red when clicked
+                              width: _isClicked
+                                  ? 6
+                                  : 3, // Thicker border when clicked
                             ),
                             shape: BoxShape.circle, // Make it circular
                           ),
@@ -256,7 +304,7 @@ class _ISpyPageState extends State<ISpyPage> {
                               _createPageFlipTransition(
                                 ISpyPage(
                                   index: widget.index + 1,
-                                  objectsFound: widget.objectsFound, 
+                                  objectsFound: widget.objectsFound,
                                   stopwatch: widget.stopwatch,
                                 ),
                               ),
@@ -268,9 +316,9 @@ class _ISpyPageState extends State<ISpyPage> {
                         child: Text(
                           'Give Up',
                           style: TextStyle(
-                            color: const Color.fromARGB(255, 86, 29, 124), // Change text color to red
-                            fontSize: 35
-                          ),
+                              color: const Color.fromARGB(
+                                  255, 86, 29, 124), // Change text color to red
+                              fontSize: 35),
                         ),
                       ),
                     ),
@@ -279,12 +327,34 @@ class _ISpyPageState extends State<ISpyPage> {
                       left: 20,
                       child: ElevatedButton(
                         onPressed: () {
-                          Navigator.pop(context); // Go back to the previous page
+                          Navigator.pop(
+                              context); // Go back to the previous page
                         },
-
                         child: const Icon(
                           Icons.arrow_back,
                           color: Colors.black, // Black icon color
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      bottom: 20,
+                      left: 20,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          // Restart game and go back to StartPage
+                          Navigator.pushReplacement(
+                            context,
+                            _createPageFlipTransition(
+                              const StartPage(),
+                            ),
+                          );
+                        },
+                        child: const Text(
+                          'Restart',
+                          style: TextStyle(
+                            fontSize: 35,
+                            color: Color.fromARGB(255, 86, 29, 124),
+                          ),
                         ),
                       ),
                     ),
@@ -342,7 +412,8 @@ class _ISpyPageState extends State<ISpyPage> {
         const end = Offset.zero;
         const curve = Curves.easeInOut;
 
-        var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+        var tween =
+            Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
         var offsetAnimation = animation.drive(tween);
 
         return SlideTransition(position: offsetAnimation, child: child);
