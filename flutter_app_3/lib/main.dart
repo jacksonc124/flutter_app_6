@@ -31,6 +31,7 @@ class StartPage extends StatefulWidget {
 class _StartPageState extends State<StartPage> {
   late Stopwatch _stopwatch;
   bool _gameStarted = false;
+  final TextEditingController _nameController = TextEditingController();
 
   @override
   void initState() {
@@ -39,18 +40,26 @@ class _StartPageState extends State<StartPage> {
   }
 
   void _startGame() {
-    setState(() {
-      _gameStarted = true;
-    });
-    _stopwatch.start();
-    // Navigate to the ISpyPage
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (context) =>
-            ISpyPage(index: 0, objectsFound: 0, stopwatch: _stopwatch),
-      ),
-    );
+    if (_nameController.text.isNotEmpty) {
+      setState(() {
+        _gameStarted = true;
+      });
+      _stopwatch.start();
+      // Navigate to the ISpyPage
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ISpyPage(
+            index: 0,
+            objectsFound: 0,
+            stopwatch: _stopwatch,
+            playerName: _nameController.text,
+          ),
+        ),
+      );
+    } else {
+      _showErrorDialog();
+    }
   }
 
   void _restartGame() {
@@ -62,6 +71,24 @@ class _StartPageState extends State<StartPage> {
       context,
       MaterialPageRoute(
         builder: (context) => const StartPage(),
+      ),
+    );
+  }
+
+  void _showErrorDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Error"),
+        content: const Text("Please enter your name to start the game."),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: const Text("OK"),
+          ),
+        ],
       ),
     );
   }
@@ -80,7 +107,6 @@ class _StartPageState extends State<StartPage> {
         toolbarHeight: 0, // Removes the top box (app bar height)
       ),
       body: SingleChildScrollView(
-        // Added scrollable view
         child: Center(
           child: Stack(
             children: [
@@ -88,38 +114,50 @@ class _StartPageState extends State<StartPage> {
                 width: double.infinity,
                 height: MediaQuery.of(context).size.height,
                 child: FittedBox(
-                  // Ensures image fits within screen bounds
                   fit: BoxFit.contain,
-                  child:
-                      Image.asset('images/cover.png'), // Your start image here
+                  child: Image.asset('images/cover.png'),
                 ),
               ),
               Center(
                 child: Positioned(
-                  bottom: MediaQuery.of(context).size.height *
-                      0.25, // 3/4 of the screen height from the top
-                  child: ElevatedButton(
-                    onPressed: _gameStarted
-                        ? null
-                        : _startGame, // Disable button if game has started
-                    child: const Text(
-                      'Start',
-                      style: TextStyle(
-                        fontSize: 60, // Larger font size
-                        color: Color.fromARGB(
-                            255, 86, 29, 124), // Red color for the text
+                  bottom: MediaQuery.of(context).size.height * 0.25,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: TextField(
+                          controller: _nameController,
+                          decoration: const InputDecoration(
+                            labelText: "Enter Your Name",
+                            labelStyle: TextStyle(color: Colors.white),
+                            filled: true,
+                            fillColor: Colors.black45,
+                          ),
+                          style: const TextStyle(color: Colors.white),
+                        ),
                       ),
-                    ),
+                      const SizedBox(height: 20),
+                      ElevatedButton(
+                        onPressed: _gameStarted ? null : _startGame,
+                        child: const Text(
+                          'Start',
+                          style: TextStyle(
+                            fontSize: 60,
+                            color: Color.fromARGB(255, 86, 29, 124),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
-              // Display Restart button only if the game has started
               if (_gameStarted)
                 Positioned(
                   bottom: 20,
                   right: 20,
                   child: ElevatedButton(
-                    onPressed: _restartGame, // Restart button
+                    onPressed: _restartGame,
                     child: const Text(
                       'Restart',
                       style: TextStyle(
@@ -141,6 +179,7 @@ class ISpyPage extends StatefulWidget {
   final int index;
   final int objectsFound;
   final Stopwatch stopwatch;
+  final String playerName;
 
   static const List<String> images = [
     'images/iSpyPage1.jpg',
@@ -181,11 +220,13 @@ class ISpyPage extends StatefulWidget {
     'What Happened To The Ceiling Tile??',
   ];
 
-  const ISpyPage(
-      {super.key,
-      required this.index,
-      required this.objectsFound,
-      required this.stopwatch});
+  const ISpyPage({
+    super.key,
+    required this.index,
+    required this.objectsFound,
+    required this.stopwatch,
+    required this.playerName,
+  });
 
   @override
   _ISpyPageState createState() => _ISpyPageState();
@@ -198,8 +239,8 @@ class _ISpyPageState extends State<ISpyPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading: false, // Remove the back arrow here as well
-        toolbarHeight: 0, // Remove the top box (app bar height)
+        automaticallyImplyLeading: false,
+        toolbarHeight: 0,
       ),
       body: Column(
         children: [
@@ -253,10 +294,9 @@ class _ISpyPageState extends State<ISpyPage> {
                       child: InkWell(
                         onTap: () {
                           setState(() {
-                            _isClicked = true; // Set clicked to true
+                            _isClicked = true;
                           });
 
-                          // Delay for 1 second to show the circle
                           Future.delayed(const Duration(seconds: 1), () {
                             if (widget.index < ISpyPage.images.length - 1) {
                               Navigator.push(
@@ -266,6 +306,7 @@ class _ISpyPageState extends State<ISpyPage> {
                                     index: widget.index + 1,
                                     objectsFound: widget.objectsFound + 1,
                                     stopwatch: widget.stopwatch,
+                                    playerName: widget.playerName,
                                   ),
                                 ),
                               );
@@ -282,13 +323,10 @@ class _ISpyPageState extends State<ISpyPage> {
                             border: Border.all(
                               color: _isClicked
                                   ? Colors.red
-                                  : const Color.fromARGB(24, 247, 0,
-                                      255), // Change to red when clicked
-                              width: _isClicked
-                                  ? 6
-                                  : 3, // Thicker border when clicked
+                                  : const Color.fromARGB(24, 247, 0, 255),
+                              width: _isClicked ? 6 : 3,
                             ),
-                            shape: BoxShape.circle, // Make it circular
+                            shape: BoxShape.circle,
                           ),
                         ),
                       ),
@@ -306,6 +344,7 @@ class _ISpyPageState extends State<ISpyPage> {
                                   index: widget.index + 1,
                                   objectsFound: widget.objectsFound,
                                   stopwatch: widget.stopwatch,
+                                  playerName: widget.playerName,
                                 ),
                               ),
                             );
@@ -316,8 +355,7 @@ class _ISpyPageState extends State<ISpyPage> {
                         child: Text(
                           'Give Up',
                           style: TextStyle(
-                              color: const Color.fromARGB(
-                                  255, 86, 29, 124), // Change text color to red
+                              color: const Color.fromARGB(255, 86, 29, 124),
                               fontSize: 35),
                         ),
                       ),
@@ -327,12 +365,11 @@ class _ISpyPageState extends State<ISpyPage> {
                       left: 20,
                       child: ElevatedButton(
                         onPressed: () {
-                          Navigator.pop(
-                              context); // Go back to the previous page
+                          Navigator.pop(context);
                         },
                         child: const Icon(
                           Icons.arrow_back,
-                          color: Colors.black, // Black icon color
+                          color: Colors.black,
                         ),
                       ),
                     ),
@@ -341,7 +378,6 @@ class _ISpyPageState extends State<ISpyPage> {
                       left: 20,
                       child: ElevatedButton(
                         onPressed: () {
-                          // Restart game and go back to StartPage
                           Navigator.pushReplacement(
                             context,
                             _createPageFlipTransition(
@@ -369,46 +405,140 @@ class _ISpyPageState extends State<ISpyPage> {
   }
 
   void _showFinalScore(BuildContext context) {
-    widget.stopwatch.stop();
+    widget.stopwatch.stop(); // Stop the stopwatch when the game is over
+
+    // Calculate score based on the number of objects found
+    int score =
+        widget.objectsFound; // Score is the number of objects found (out of 10)
+
+    // For the rank, you might want to have a predefined list of scores or a leaderboard
+    // For simplicity, I'm assuming a static leaderboard here.
+    List<Map<String, dynamic>> leaderboard = [
+      {'name': 'Player1', 'score': 10},
+      {'name': 'Player2', 'score': 9},
+      {'name': 'Player3', 'score': 8},
+      {'name': 'Player4', 'score': 7},
+      {'name': 'Player5', 'score': 6},
+      {'name': 'Player6', 'score': 5},
+      {'name': 'Player7', 'score': 4},
+      {'name': 'Player8', 'score': 3},
+      {'name': 'Player9', 'score': 2},
+      {'name': 'Player10', 'score': 1},
+    ]; // Example leaderboard data
+
+    // Calculate player's rank
+    int rank = leaderboard.indexWhere((player) => player['score'] <= score) + 1;
+
+    // Show Game Over dialog
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text(
           'Game Over!',
           style: TextStyle(
-            fontSize: 30, // Larger font size for "Game Over"
+            fontSize: 30,
             fontWeight: FontWeight.bold,
           ),
         ),
-        content: Text(
-          'Your final score: ${widget.objectsFound + 1}/${ISpyPage.images.length}\nTime: ${widget.stopwatch.elapsedMilliseconds / 1000} seconds',
-          style: const TextStyle(
-            fontSize: 22, // Larger font size for final score text
-          ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              'Player: ${widget.playerName}', // Display player name
+              style: const TextStyle(fontSize: 25),
+            ),
+            Text(
+              'Total Time: ${widget.stopwatch.elapsed.inMinutes}:${widget.stopwatch.elapsed.inSeconds % 60}', // Display total time
+              style: const TextStyle(fontSize: 25),
+            ),
+            Text(
+              'Objects Found: ${widget.objectsFound}', // Display number of objects found
+              style: const TextStyle(fontSize: 25),
+            ),
+            Text(
+              'Score: $score/10', // Display score out of 10
+              style: const TextStyle(fontSize: 25),
+            ),
+            Text(
+              'Rank: #$rank', // Display rank based on leaderboard
+              style: const TextStyle(fontSize: 25),
+            ),
+          ],
         ),
         actions: [
           TextButton(
             onPressed: () {
+              Navigator.pop(context); // Close the game over dialog
               Navigator.pushReplacement(
                 context,
                 _createPageFlipTransition(
-                  const StartPage(),
+                  const StartPage(), // Navigate back to the start page
                 ),
               );
             },
-            child: const Text('Restart'),
+            child: const Text(
+              'Restart', // Button to restart the game
+              style: TextStyle(fontSize: 20),
+            ),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context); // Close the game over dialog
+              _showLeaderboard(
+                  context, leaderboard); // Show the leaderboard dialog
+            },
+            child: const Text(
+              'Show Leaderboard', // Button to show the leaderboard
+              style: TextStyle(fontSize: 20),
+            ),
           ),
         ],
       ),
     );
   }
 
-  // Custom page flip animation transition
+  void _showLeaderboard(
+      BuildContext context, List<Map<String, dynamic>> leaderboard) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text(
+          'Leaderboard',
+          style: TextStyle(
+            fontSize: 30,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        content: SingleChildScrollView(
+          child: Column(
+            children: leaderboard.map((player) {
+              return Text(
+                '${player['name']} - ${player['score']} points', // Display each player's name and score
+                style: const TextStyle(fontSize: 20),
+              );
+            }).toList(),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context); // Close the leaderboard dialog
+            },
+            child: const Text(
+              'Close',
+              style: TextStyle(fontSize: 20),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   PageRouteBuilder _createPageFlipTransition(Widget page) {
     return PageRouteBuilder(
       pageBuilder: (context, animation, secondaryAnimation) => page,
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
-        const begin = Offset(1.0, 0.0); // Start from the right
+        const begin = Offset(1.0, 0.0);
         const end = Offset.zero;
         const curve = Curves.easeInOut;
 
