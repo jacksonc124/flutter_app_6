@@ -202,7 +202,7 @@ class _StartPageState extends State<StartPage> {
                       child: const Text(
                         'Start',
                         style: TextStyle(
-                          fontSize: 60,
+                          fontSize: 30,
                           color: Color.fromARGB(255, 86, 29, 124),
                         ),
                       ),
@@ -213,7 +213,7 @@ class _StartPageState extends State<StartPage> {
                       child: const Text(
                         'View Leaderboard',
                         style: TextStyle(
-                          fontSize: 30,
+                          fontSize: 20,
                           color: Color.fromARGB(255, 86, 29, 124),
                         ),
                       ),
@@ -282,15 +282,15 @@ class ISpyPage extends StatefulWidget {
   // Object names/questions for each page
   static const List<String> objectNames = [
     'What could I use to enter the doors of Patrick F. Taylor Hall?',
-    'What can I find on the second floor?',
+    'What;s something strange I can find on the second floor?',
     'What is the year the engineering honors society started?',
-    'Where can I order food between classes?',
+    'Where can I order my food on between classes?',
     'Where can I get my tiger card?',
-    'What is on my class door?',
+    'What is taped to my class door?',
     'Where should the missing brick go?',
     'Where can I find a building camera?',
     'Where can I find a 3D printer?',
-    'What Happened To The Ceiling Tile??',
+    'Where is the missing Ceiling Tile??',
   ];
 
   const ISpyPage({
@@ -328,7 +328,7 @@ class _ISpyPageState extends State<ISpyPage> {
                 Text(
                   ISpyPage.objectNames[widget.index],
                   style: const TextStyle(
-                    fontSize: 45,
+                    fontSize: 20,
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
                   ),
@@ -337,7 +337,7 @@ class _ISpyPageState extends State<ISpyPage> {
                 Text(
                   'Items "Scavenged" -  ${widget.objectsFound}',
                   style: const TextStyle(
-                    fontSize: 30,
+                    fontSize: 15,
                     fontWeight: FontWeight.bold,
                     color: Color.fromARGB(255, 0, 0, 0),
                   ),
@@ -432,7 +432,7 @@ class _ISpyPageState extends State<ISpyPage> {
                           'Give Up',
                           style: TextStyle(
                             color: Color.fromARGB(255, 86, 29, 124),
-                            fontSize: 35,
+                            fontSize: 15,
                           ),
                         ),
                       ),
@@ -453,7 +453,7 @@ class _ISpyPageState extends State<ISpyPage> {
                         child: const Text(
                           'Restart',
                           style: TextStyle(
-                            fontSize: 35,
+                            fontSize: 15,
                             color: Color.fromARGB(255, 86, 29, 124),
                           ),
                         ),
