@@ -431,7 +431,7 @@ class _ISpyPageState extends State<ISpyPage> {
                         child: const Text(
                           'Give Up',
                           style: TextStyle(
-                            color: Color.fromARGB(255, 86, 29, 124),
+                            color: Color.fromARGB(255, 110, 36, 159),
                             fontSize: 15,
                           ),
                         ),
