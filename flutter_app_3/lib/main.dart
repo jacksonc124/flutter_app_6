@@ -6,7 +6,6 @@ void main() {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -23,7 +22,6 @@ class MyApp extends StatelessWidget {
 
 class StartPage extends StatefulWidget {
   const StartPage({super.key});
-
   @override
   _StartPageState createState() => _StartPageState();
 }
@@ -45,7 +43,7 @@ class _StartPageState extends State<StartPage> {
         _gameStarted = true;
       });
       _stopwatch.start();
-      // Navigate to the ISpyPage
+      // Navigate to the ISpyPage with the provided player name using standard transition
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
@@ -96,6 +94,7 @@ class _StartPageState extends State<StartPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // The app bar is hidden by setting its height to zero
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
@@ -103,13 +102,14 @@ class _StartPageState extends State<StartPage> {
             Navigator.of(context).pop(); // Back button functionality
           },
         ),
-        automaticallyImplyLeading: false, // Removes the default back button
-        toolbarHeight: 0, // Removes the top box (app bar height)
+        automaticallyImplyLeading: false,
+        toolbarHeight: 0,
       ),
       body: SingleChildScrollView(
         child: Center(
           child: Stack(
             children: [
+              // Background image
               SizedBox(
                 width: double.infinity,
                 height: MediaQuery.of(context).size.height,
@@ -118,40 +118,42 @@ class _StartPageState extends State<StartPage> {
                   child: Image.asset('images/cover.png'),
                 ),
               ),
-              Center(
-                child: Positioned(
-                  bottom: MediaQuery.of(context).size.height * 0.25,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        child: TextField(
-                          controller: _nameController,
-                          decoration: const InputDecoration(
-                            labelText: "Enter Your Name",
-                            labelStyle: TextStyle(color: Colors.white),
-                            filled: true,
-                            fillColor: Colors.black45,
-                          ),
-                          style: const TextStyle(color: Colors.white),
+              // Name entry and Start button positioned near the bottom
+              Positioned(
+                bottom: MediaQuery.of(context).size.height * 0.25,
+                left: 0,
+                right: 0,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: TextField(
+                        controller: _nameController,
+                        decoration: const InputDecoration(
+                          labelText: "Enter Your Name",
+                          labelStyle: TextStyle(color: Colors.white),
+                          filled: true,
+                          fillColor: Colors.black45,
+                        ),
+                        style: const TextStyle(color: Colors.white),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    ElevatedButton(
+                      onPressed: _gameStarted ? null : _startGame,
+                      child: const Text(
+                        'Start',
+                        style: TextStyle(
+                          fontSize: 60,
+                          color: Color.fromARGB(255, 86, 29, 124),
                         ),
                       ),
-                      const SizedBox(height: 20),
-                      ElevatedButton(
-                        onPressed: _gameStarted ? null : _startGame,
-                        child: const Text(
-                          'Start',
-                          style: TextStyle(
-                            fontSize: 60,
-                            color: Color.fromARGB(255, 86, 29, 124),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
+              // Restart button if game has started
               if (_gameStarted)
                 Positioned(
                   bottom: 20,
@@ -181,6 +183,7 @@ class ISpyPage extends StatefulWidget {
   final Stopwatch stopwatch;
   final String playerName;
 
+  // List of background images for each scavenger hunt page
   static const List<String> images = [
     'images/iSpyPage1.jpg',
     'images/iSpyPage2.jpg',
@@ -194,6 +197,7 @@ class ISpyPage extends StatefulWidget {
     'images/iSpyPage10.jpg',
   ];
 
+  // Correct positions for the tap targets
   static const List<Offset> correctPositions = [
     Offset(370, 450),
     Offset(300, 450),
@@ -207,6 +211,7 @@ class ISpyPage extends StatefulWidget {
     Offset(310, 575)
   ];
 
+  // Object names/questions for each page
   static const List<String> objectNames = [
     'What could I use to enter the doors of Patrick F. Taylor Hall?',
     'What can I find on the second floor?',
@@ -238,12 +243,14 @@ class _ISpyPageState extends State<ISpyPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // Hiding the default app bar
       appBar: AppBar(
         automaticallyImplyLeading: false,
         toolbarHeight: 0,
       ),
       body: Column(
         children: [
+          // Display the question and current objects found
           Container(
             color: const Color.fromARGB(186, 86, 29, 124),
             width: double.infinity,
@@ -270,6 +277,7 @@ class _ISpyPageState extends State<ISpyPage> {
               ],
             ),
           ),
+          // Game area with image and clickable target
           Expanded(
             child: LayoutBuilder(
               builder: (context, constraints) {
@@ -282,12 +290,14 @@ class _ISpyPageState extends State<ISpyPage> {
 
                 return Stack(
                   children: [
+                    // Background image for the current page
                     Positioned.fill(
                       child: Image.asset(
                         ISpyPage.images[widget.index],
                         fit: BoxFit.fitHeight,
                       ),
                     ),
+                    // The clickable area (target)
                     Positioned(
                       left: correctX,
                       top: correctY,
@@ -301,8 +311,8 @@ class _ISpyPageState extends State<ISpyPage> {
                             if (widget.index < ISpyPage.images.length - 1) {
                               Navigator.push(
                                 context,
-                                _createPageFlipTransition(
-                                  ISpyPage(
+                                MaterialPageRoute(
+                                  builder: (context) => ISpyPage(
                                     index: widget.index + 1,
                                     objectsFound: widget.objectsFound + 1,
                                     stopwatch: widget.stopwatch,
@@ -331,6 +341,7 @@ class _ISpyPageState extends State<ISpyPage> {
                         ),
                       ),
                     ),
+                    // Give Up button
                     Positioned(
                       bottom: 20,
                       right: 20,
@@ -339,8 +350,8 @@ class _ISpyPageState extends State<ISpyPage> {
                           if (widget.index < ISpyPage.images.length - 1) {
                             Navigator.push(
                               context,
-                              _createPageFlipTransition(
-                                ISpyPage(
+                              MaterialPageRoute(
+                                builder: (context) => ISpyPage(
                                   index: widget.index + 1,
                                   objectsFound: widget.objectsFound,
                                   stopwatch: widget.stopwatch,
@@ -352,14 +363,16 @@ class _ISpyPageState extends State<ISpyPage> {
                             _showFinalScore(context);
                           }
                         },
-                        child: Text(
+                        child: const Text(
                           'Give Up',
                           style: TextStyle(
-                              color: const Color.fromARGB(255, 86, 29, 124),
-                              fontSize: 35),
+                            color: Color.fromARGB(255, 86, 29, 124),
+                            fontSize: 35,
+                          ),
                         ),
                       ),
                     ),
+                    // Back button
                     Positioned(
                       top: 20,
                       left: 20,
@@ -373,6 +386,7 @@ class _ISpyPageState extends State<ISpyPage> {
                         ),
                       ),
                     ),
+                    // Restart button
                     Positioned(
                       bottom: 20,
                       left: 20,
@@ -380,8 +394,8 @@ class _ISpyPageState extends State<ISpyPage> {
                         onPressed: () {
                           Navigator.pushReplacement(
                             context,
-                            _createPageFlipTransition(
-                              const StartPage(),
+                            MaterialPageRoute(
+                              builder: (context) => const StartPage(),
                             ),
                           );
                         },
@@ -407,12 +421,11 @@ class _ISpyPageState extends State<ISpyPage> {
   void _showFinalScore(BuildContext context) {
     widget.stopwatch.stop(); // Stop the stopwatch when the game is over
 
-    // Calculate score based on the number of objects found
-    int score =
-        widget.objectsFound; // Score is the number of objects found (out of 10)
+    // Calculate the score and percentage based on objects found (out of 10)
+    int score = widget.objectsFound;
+    double percentage = (score / ISpyPage.images.length) * 100;
 
-    // For the rank, you might want to have a predefined list of scores or a leaderboard
-    // For simplicity, I'm assuming a static leaderboard here.
+    // Example static leaderboard data
     List<Map<String, dynamic>> leaderboard = [
       {'name': 'Player1', 'score': 10},
       {'name': 'Player2', 'score': 9},
@@ -424,12 +437,16 @@ class _ISpyPageState extends State<ISpyPage> {
       {'name': 'Player8', 'score': 3},
       {'name': 'Player9', 'score': 2},
       {'name': 'Player10', 'score': 1},
-    ]; // Example leaderboard data
+    ];
 
-    // Calculate player's rank
-    int rank = leaderboard.indexWhere((player) => player['score'] <= score) + 1;
+    // Add the current player's score to the leaderboard and sort it
+    leaderboard.add({'name': widget.playerName, 'score': score});
+    leaderboard.sort((a, b) => b['score'].compareTo(a['score']));
+    int rank = leaderboard.indexWhere((player) =>
+            player['name'] == widget.playerName && player['score'] == score) +
+        1;
 
-    // Show Game Over dialog
+    // Show the Game Over dialog with score, percentage and rank
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -444,23 +461,27 @@ class _ISpyPageState extends State<ISpyPage> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              'Player: ${widget.playerName}', // Display player name
+              'Player: ${widget.playerName}',
               style: const TextStyle(fontSize: 25),
             ),
             Text(
-              'Total Time: ${widget.stopwatch.elapsed.inMinutes}:${widget.stopwatch.elapsed.inSeconds % 60}', // Display total time
+              'Total Time: ${widget.stopwatch.elapsed.inMinutes}:${(widget.stopwatch.elapsed.inSeconds % 60).toString().padLeft(2, '0')}',
               style: const TextStyle(fontSize: 25),
             ),
             Text(
-              'Objects Found: ${widget.objectsFound}', // Display number of objects found
+              'Objects Found: ${widget.objectsFound}',
               style: const TextStyle(fontSize: 25),
             ),
             Text(
-              'Score: $score/10', // Display score out of 10
+              'Score: $score/10',
               style: const TextStyle(fontSize: 25),
             ),
             Text(
-              'Rank: #$rank', // Display rank based on leaderboard
+              'Percentage: ${percentage.toStringAsFixed(2)}%',
+              style: const TextStyle(fontSize: 25),
+            ),
+            Text(
+              'Rank: #$rank',
               style: const TextStyle(fontSize: 25),
             ),
           ],
@@ -468,27 +489,26 @@ class _ISpyPageState extends State<ISpyPage> {
         actions: [
           TextButton(
             onPressed: () {
-              Navigator.pop(context); // Close the game over dialog
+              Navigator.pop(context); // Close dialog
               Navigator.pushReplacement(
                 context,
-                _createPageFlipTransition(
-                  const StartPage(), // Navigate back to the start page
+                MaterialPageRoute(
+                  builder: (context) => const StartPage(),
                 ),
               );
             },
             child: const Text(
-              'Restart', // Button to restart the game
+              'Restart',
               style: TextStyle(fontSize: 20),
             ),
           ),
           TextButton(
             onPressed: () {
-              Navigator.pop(context); // Close the game over dialog
-              _showLeaderboard(
-                  context, leaderboard); // Show the leaderboard dialog
+              Navigator.pop(context); // Close dialog
+              _showLeaderboard(context, leaderboard);
             },
             child: const Text(
-              'Show Leaderboard', // Button to show the leaderboard
+              'Show Leaderboard',
               style: TextStyle(fontSize: 20),
             ),
           ),
@@ -513,7 +533,7 @@ class _ISpyPageState extends State<ISpyPage> {
           child: Column(
             children: leaderboard.map((player) {
               return Text(
-                '${player['name']} - ${player['score']} points', // Display each player's name and score
+                '${player['name']} - ${player['score']} points',
                 style: const TextStyle(fontSize: 20),
               );
             }).toList(),
@@ -531,23 +551,6 @@ class _ISpyPageState extends State<ISpyPage> {
           ),
         ],
       ),
-    );
-  }
-
-  PageRouteBuilder _createPageFlipTransition(Widget page) {
-    return PageRouteBuilder(
-      pageBuilder: (context, animation, secondaryAnimation) => page,
-      transitionsBuilder: (context, animation, secondaryAnimation, child) {
-        const begin = Offset(1.0, 0.0);
-        const end = Offset.zero;
-        const curve = Curves.easeInOut;
-
-        var tween =
-            Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-        var offsetAnimation = animation.drive(tween);
-
-        return SlideTransition(position: offsetAnimation, child: child);
-      },
     );
   }
 }
