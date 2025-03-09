@@ -4,6 +4,16 @@ void main() {
   runApp(const MyApp());
 }
 
+// Global leaderboard storage
+class LeaderboardData {
+  static List<Map<String, dynamic>> scores = [];
+
+  static void addScore(String name, int score) {
+    scores.add({'name': name, 'score': score});
+    scores.sort((a, b) => b['score'].compareTo(a['score']));
+  }
+}
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
   @override
@@ -43,7 +53,7 @@ class _StartPageState extends State<StartPage> {
         _gameStarted = true;
       });
       _stopwatch.start();
-      // Navigate to the ISpyPage with the provided player name using standard transition
+      // Navigate to the ISpyPage with the provided player name using a standard transition
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
@@ -91,10 +101,61 @@ class _StartPageState extends State<StartPage> {
     );
   }
 
+  // Leaderboard dialog shown from StartPage
+  void _showLeaderboard() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text(
+          'Leaderboard',
+          style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+        ),
+        content: LeaderboardData.scores.isEmpty
+            ? const Text("No scores yet.", style: TextStyle(fontSize: 20))
+            : SingleChildScrollView(
+                child: Column(
+                  children: LeaderboardData.scores.map((player) {
+                    return Text(
+                      '${player['name']} - ${player['score']} points',
+                      style: const TextStyle(fontSize: 20),
+                    );
+                  }).toList(),
+                ),
+              ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context); // Close dialog
+            },
+            child: const Text(
+              'Close',
+              style: TextStyle(fontSize: 20),
+            ),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context); // Close dialog and restart game
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const StartPage(),
+                ),
+              );
+            },
+            child: const Text(
+              'Restart',
+              style: TextStyle(fontSize: 20),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // The app bar is hidden by setting its height to zero
+      // Hiding the default app bar
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
@@ -118,7 +179,7 @@ class _StartPageState extends State<StartPage> {
                   child: Image.asset('images/cover.png'),
                 ),
               ),
-              // Name entry and Start button positioned near the bottom
+              // Name entry, Start button, and View Leaderboard button positioned near the bottom
               Positioned(
                 bottom: MediaQuery.of(context).size.height * 0.25,
                 left: 0,
@@ -146,6 +207,17 @@ class _StartPageState extends State<StartPage> {
                         'Start',
                         style: TextStyle(
                           fontSize: 60,
+                          color: Color.fromARGB(255, 86, 29, 124),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    ElevatedButton(
+                      onPressed: _showLeaderboard,
+                      child: const Text(
+                        'View Leaderboard',
+                        style: TextStyle(
+                          fontSize: 30,
                           color: Color.fromARGB(255, 86, 29, 124),
                         ),
                       ),
@@ -287,17 +359,15 @@ class _ISpyPageState extends State<ISpyPage> {
                     ISpyPage.correctPositions[widget.index].dx * scaleX;
                 double correctY =
                     ISpyPage.correctPositions[widget.index].dy * scaleY;
-
                 return Stack(
                   children: [
-                    // Background image for the current page
                     Positioned.fill(
                       child: Image.asset(
                         ISpyPage.images[widget.index],
                         fit: BoxFit.fitHeight,
                       ),
                     ),
-                    // The clickable area (target)
+                    // Clickable target area
                     Positioned(
                       left: correctX,
                       top: correctY,
@@ -306,7 +376,6 @@ class _ISpyPageState extends State<ISpyPage> {
                           setState(() {
                             _isClicked = true;
                           });
-
                           Future.delayed(const Duration(seconds: 1), () {
                             if (widget.index < ISpyPage.images.length - 1) {
                               Navigator.push(
@@ -418,35 +487,17 @@ class _ISpyPageState extends State<ISpyPage> {
     );
   }
 
+  // Game Over dialog that updates the leaderboard with the current player's score
   void _showFinalScore(BuildContext context) {
-    widget.stopwatch.stop(); // Stop the stopwatch when the game is over
-
-    // Calculate the score and percentage based on objects found (out of 10)
+    widget.stopwatch.stop();
     int score = widget.objectsFound;
     double percentage = (score / ISpyPage.images.length) * 100;
 
-    // Example static leaderboard data
-    List<Map<String, dynamic>> leaderboard = [
-      {'name': 'Player1', 'score': 10},
-      {'name': 'Player2', 'score': 9},
-      {'name': 'Player3', 'score': 8},
-      {'name': 'Player4', 'score': 7},
-      {'name': 'Player5', 'score': 6},
-      {'name': 'Player6', 'score': 5},
-      {'name': 'Player7', 'score': 4},
-      {'name': 'Player8', 'score': 3},
-      {'name': 'Player9', 'score': 2},
-      {'name': 'Player10', 'score': 1},
-    ];
-
-    // Add the current player's score to the leaderboard and sort it
-    leaderboard.add({'name': widget.playerName, 'score': score});
-    leaderboard.sort((a, b) => b['score'].compareTo(a['score']));
-    int rank = leaderboard.indexWhere((player) =>
+    LeaderboardData.addScore(widget.playerName, score);
+    int rank = LeaderboardData.scores.indexWhere((player) =>
             player['name'] == widget.playerName && player['score'] == score) +
         1;
 
-    // Show the Game Over dialog with score, percentage and rank
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -489,7 +540,7 @@ class _ISpyPageState extends State<ISpyPage> {
         actions: [
           TextButton(
             onPressed: () {
-              Navigator.pop(context); // Close dialog
+              Navigator.pop(context);
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
@@ -504,8 +555,8 @@ class _ISpyPageState extends State<ISpyPage> {
           ),
           TextButton(
             onPressed: () {
-              Navigator.pop(context); // Close dialog
-              _showLeaderboard(context, leaderboard);
+              Navigator.pop(context);
+              _showLeaderboard(context);
             },
             child: const Text(
               'Show Leaderboard',
@@ -517,8 +568,8 @@ class _ISpyPageState extends State<ISpyPage> {
     );
   }
 
-  void _showLeaderboard(
-      BuildContext context, List<Map<String, dynamic>> leaderboard) {
+  // Leaderboard dialog shown from within the game (ISpyPage)
+  void _showLeaderboard(BuildContext context) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -529,23 +580,40 @@ class _ISpyPageState extends State<ISpyPage> {
             fontWeight: FontWeight.bold,
           ),
         ),
-        content: SingleChildScrollView(
-          child: Column(
-            children: leaderboard.map((player) {
-              return Text(
-                '${player['name']} - ${player['score']} points',
-                style: const TextStyle(fontSize: 20),
-              );
-            }).toList(),
-          ),
-        ),
+        content: LeaderboardData.scores.isEmpty
+            ? const Text("No scores yet.", style: TextStyle(fontSize: 20))
+            : SingleChildScrollView(
+                child: Column(
+                  children: LeaderboardData.scores.map((player) {
+                    return Text(
+                      '${player['name']} - ${player['score']} points',
+                      style: const TextStyle(fontSize: 20),
+                    );
+                  }).toList(),
+                ),
+              ),
         actions: [
           TextButton(
             onPressed: () {
-              Navigator.pop(context); // Close the leaderboard dialog
+              Navigator.pop(context);
             },
             child: const Text(
               'Close',
+              style: TextStyle(fontSize: 20),
+            ),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const StartPage(),
+                ),
+              );
+            },
+            child: const Text(
+              'Restart',
               style: TextStyle(fontSize: 20),
             ),
           ),
