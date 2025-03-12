@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-
 
 void main() {
   runApp(const MyApp());
@@ -171,7 +169,7 @@ class _StartPageState extends State<StartPage> {
                 width: double.infinity,
                 height: MediaQuery.of(context).size.height,
                 child: FittedBox(
-                  fit: BoxFit.contain,
+                  fit: BoxFit.fill,
                   child: Image.asset('images/cover.png'),
                 ),
               ),
@@ -364,7 +362,7 @@ class _ISpyPageState extends State<ISpyPage> {
                     Positioned.fill(
                       child: Image.asset(
                         ISpyPage.images[widget.index],
-                        fit: BoxFit.fitHeight,
+                        fit: BoxFit.fill,
                       ),
                     ),
                     // Clickable target area
@@ -401,7 +399,7 @@ class _ISpyPageState extends State<ISpyPage> {
                             color: Colors.transparent,
                             border: Border.all(
                               color: _isClicked
-                                  ? Colors.red
+                                  ? const Color.fromARGB(255, 253, 208, 35)
                                   : const Color.fromARGB(22, 247, 0, 255),
                               width: _isClicked ? 6 : 3,
                             ),
