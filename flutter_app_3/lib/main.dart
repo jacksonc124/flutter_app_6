@@ -25,7 +25,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.red),
         useMaterial3: true,
-        textTheme: GoogleFonts.pressStart2pTextTheme(),
+        fontFamily: 'Proxima',
       ),
       home: const StartPage(),
     );
@@ -320,7 +320,7 @@ class _ISpyPageState extends State<ISpyPage> {
         children: [
           // Display the question and current objects found
           Container(
-  color: const Color.fromARGB(186, 86, 29, 124),
+  color: const Color.fromARGB(255, 70, 29, 124),
   width: double.infinity,
   padding: const EdgeInsets.symmetric(vertical: 5),
   child: Column(
@@ -332,7 +332,7 @@ class _ISpyPageState extends State<ISpyPage> {
         style: const TextStyle(
           fontSize: 20,
           fontWeight: FontWeight.bold,
-          color: Colors.white,
+          color: const Color.fromARGB(255, 241, 238, 219),
         ),
         textAlign: TextAlign.center, // Center text within its box
       ),
@@ -342,7 +342,7 @@ class _ISpyPageState extends State<ISpyPage> {
         style: const TextStyle(
           fontSize: 15,
           fontWeight: FontWeight.bold,
-          color: Color.fromARGB(255, 0, 0, 0),
+          color: Color.fromARGB(255, 253, 208, 35),
         ),
         textAlign: TextAlign.center, // Center text within its box
       ),
