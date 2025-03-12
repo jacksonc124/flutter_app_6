@@ -267,29 +267,29 @@ class ISpyPage extends StatefulWidget {
 
   // Correct positions for the tap targets
   static const List<Offset> correctPositions = [
-    Offset(370, 450),
-    Offset(300, 450),
-    Offset(370, 725),
-    Offset(450, 350),
-    Offset(215, 200),
-    Offset(135, 220),
-    Offset(130, 840),
-    Offset(575, 150),
-    Offset(200, 280),
+    Offset(390, 480),
+    Offset(415, 450),
+    Offset(360, 790),
+    Offset(500, 380),
+    Offset(215, 220),
+    Offset(175, 240),
+    Offset(138, 860),
+    Offset(605, 165),
+    Offset(215, 315),
     Offset(310, 575)
   ];
 
   // Object names/questions for each page
   static const List<String> objectNames = [
     'What could I use to enter the doors of Patrick F. Taylor Hall?',
-    'What is something strange I can find on the second floor?',
+    'Where is the branding on the car I can find on the second floor?',
     'What is the year the engineering honors society started?',
     'What can I order my food on between classes?',
     'Where can I get my tiger card?',
     'What is taped to my class door?',
     'Where should the missing brick go?',
     'Where can I find a building camera?',
-    'Where can I find a 3D printer?',
+    'Where can I find a bright neon Chevron logo?',
     'Where is the missing Ceiling Tile??',
   ];
 
@@ -320,31 +320,35 @@ class _ISpyPageState extends State<ISpyPage> {
         children: [
           // Display the question and current objects found
           Container(
-            color: const Color.fromARGB(186, 86, 29, 124),
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(vertical: 5),
-            child: Column(
-              children: [
-                Text(
-                  ISpyPage.objectNames[widget.index],
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-                const SizedBox(height: 5),
-                Text(
-                  'Items "Scavenged" -  ${widget.objectsFound}',
-                  style: const TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold,
-                    color: Color.fromARGB(255, 0, 0, 0),
-                  ),
-                ),
-              ],
-            ),
-          ),
+  color: const Color.fromARGB(186, 86, 29, 124),
+  width: double.infinity,
+  padding: const EdgeInsets.symmetric(vertical: 5),
+  child: Column(
+    mainAxisAlignment: MainAxisAlignment.center, // Center vertically
+    crossAxisAlignment: CrossAxisAlignment.center, // Center horizontally
+    children: [
+      Text(
+        ISpyPage.objectNames[widget.index],
+        style: const TextStyle(
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
+          color: Colors.white,
+        ),
+        textAlign: TextAlign.center, // Center text within its box
+      ),
+      const SizedBox(height: 5),
+      Text(
+        'Items "Scavenged" -  ${widget.objectsFound}',
+        style: const TextStyle(
+          fontSize: 15,
+          fontWeight: FontWeight.bold,
+          color: Color.fromARGB(255, 0, 0, 0),
+        ),
+        textAlign: TextAlign.center, // Center text within its box
+      ),
+    ],
+  ),
+),
           // Game area with image and clickable target
           Expanded(
             child: LayoutBuilder(
@@ -398,7 +402,7 @@ class _ISpyPageState extends State<ISpyPage> {
                             border: Border.all(
                               color: _isClicked
                                   ? Colors.red
-                                  : const Color.fromARGB(24, 247, 0, 255),
+                                  : const Color.fromARGB(22, 247, 0, 255),
                               width: _isClicked ? 6 : 3,
                             ),
                             shape: BoxShape.circle,
@@ -472,7 +476,7 @@ class _ISpyPageState extends State<ISpyPage> {
   // Game Over dialog that updates the leaderboard with the current player's score
   void _showFinalScore(BuildContext context) {
     widget.stopwatch.stop();
-    int score = widget.objectsFound;
+    int score = widget.objectsFound + 1;
     double percentage = (score / ISpyPage.images.length) * 100;
 
     LeaderboardData.addScore(widget.playerName, score);
