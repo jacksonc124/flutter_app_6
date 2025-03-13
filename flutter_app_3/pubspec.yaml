@@ -78,7 +78,7 @@ flutter:
   fonts:
     - family: Proxima
       fonts:
-        - asset: fonts/proximanova_black.ttf # Replace with your actual font path
+        - asset: fonts/proximanova_regular.ttf # Replace with your actual font path
   #   - family: Trajan Pro
   #     fonts:
   #       - asset: fonts/TrajanPro.ttf
