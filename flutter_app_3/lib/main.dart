@@ -531,14 +531,14 @@ class ISpyPage extends StatefulWidget {
 
   static const List<String> objectDescriptions = [
   'You can enter the PFT using the main entrance!',
-  'There is a car on the second floor because of...science!',
+  'Also known as the car room, students use this simulation lab to study traffic, highway design, saftey, and more!',
   'The engineering honor society was established in 1936!',
-  'You can order food using one of the Panera Bread multiple kiosks!',
+  'You can order food using one of the Panera Bread kiosks!',
   'You can get your Tiger Card at the tiger card kiosk in zone 1300!',
-  'Professors may sometimes tape class notices on the door!',
+  'Professors may sometimes tape class notices on the door, pay attention!',
   'The missing brick fits in the in the bottom left of the pavement!',
   'Security cameras monitor various parts of the building, ensuring your saftey!',
-  'The Chevron Center can be used for 3d printing, , and more!',
+  'The Chevron Center is a resource for engineers interested in becoming a distinguished communicator!',
 ];
 
   const ISpyPage({
