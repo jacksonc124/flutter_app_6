@@ -529,6 +529,18 @@ class ISpyPage extends StatefulWidget {
     'Where can I find a bright neon Chevron logo?',
   ];
 
+  static const List<String> objectDescriptions = [
+  'You can enter the PFT using the main entrance!',
+  'There is a car on the second floor because of...science!',
+  'The engineering honor society was established in 1936!',
+  'You can order food using one of the Panera Bread multiple kiosks!',
+  'You can get your Tiger Card at the tiger card kiosk in zone 1300!',
+  'Professors may sometimes tape class notices on the door!',
+  'The missing brick fits in the in the bottom left of the pavement!',
+  'Security cameras monitor various parts of the building, ensuring your saftey!',
+  'The Chevron Center can be used for 3d printing, , and more!',
+];
+
   const ISpyPage({
     super.key,
     required this.index,
@@ -666,8 +678,58 @@ class _ISpyPageState extends State<ISpyPage> {
                           setState(() {
                             _isClicked = true;
                           });
-                          Future.delayed(const Duration(seconds: 1), () {
-                          });
+                          // Show a popup with the object's description
+                          showDialog(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                              title: const Text("Great Job!", 
+                              style: TextStyle(
+                               fontSize: 15,
+                               color: Color.fromARGB(255, 86, 29, 124),
+                               fontWeight: FontWeight.bold,
+                               ),),
+                              content: Text(ISpyPage.objectDescriptions[widget.index],
+                              style: TextStyle(
+                                fontSize: 15,
+                                color: Color.fromARGB(255, 86, 29, 124),
+                                fontWeight: FontWeight.bold,
+                                ),),
+                              actions: [
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.pop(context); // Close the popup first
+                                    setState(() {
+                                      _isClicked = false;
+                                    });
+                                    int updatedObjectsFound = widget.objectsFound + 1;
+
+                                    // If all objects are found, show final score
+                                    if (updatedObjectsFound == ISpyPage.images.length) {
+                                      _showFinalScore(context);
+                                    } else {
+                                      // else, move to the next page
+                                      Navigator.pushReplacement(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => ISpyPage(
+                                            index: widget.index + 1,
+                                            objectsFound: updatedObjectsFound,
+                                            playerName: widget.playerName,
+                                          ),
+                                        ),
+                                      );
+                                    }
+                                  },
+                                  child: const Text("Continue", 
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    color: Color.fromARGB(255, 86, 29, 124),
+                                    fontWeight: FontWeight.bold,
+                                  ),),
+                                ),
+                              ],
+                            ),
+                          );
                         },
                         child: Container(
                           width: 50,
@@ -685,6 +747,7 @@ class _ISpyPageState extends State<ISpyPage> {
                         ),
                       ),
                     ),
+
                     // Restart button
                     Positioned(
 
