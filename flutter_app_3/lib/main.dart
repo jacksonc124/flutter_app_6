@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   runApp(const MyApp());
@@ -11,6 +12,16 @@ class LeaderboardData {
   static void addScore(String name, int score) {
     scores.add({'name': name, 'score': score});
     scores.sort((a, b) => b['score'].compareTo(a['score']));
+  }
+}
+
+// Global quiz leaderboard storage
+class QuizLeaderboardData {
+  static List<Map<String, dynamic>> quizScores = [];
+
+  static void addScore(String name, int score) {
+    quizScores.add({'name': name, 'score': score});
+    quizScores.sort((a, b) => b['score'].compareTo(a['score']));
   }
 }
 
@@ -126,6 +137,86 @@ class _SurveyPageState extends State<SurveyPage> {
     setState(() {
       score = tempScore; // Update the score after the quiz
     });
+
+    // Add score to quiz leaderboard
+    QuizLeaderboardData.addScore(widget.playerName, tempScore);
+  }
+
+  // Function to show quiz leaderboard
+  void _showQuizLeaderboard() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text(
+          'Quiz Leaderboard',
+          style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+        ),
+        content: QuizLeaderboardData.quizScores.isEmpty
+            ? const Text("No quiz scores yet.", style: TextStyle(fontSize: 20))
+            : SingleChildScrollView(
+                child: Column(
+                  children: QuizLeaderboardData.quizScores.map((player) {
+                    return Text(
+                      '${player['name']} - ${player['score']}/10',
+                      style: const TextStyle(fontSize: 20),
+                    );
+                  }).toList(),
+                ),
+              ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context); // Close dialog
+            },
+            child: const Text(
+              'Close',
+              style: TextStyle(fontSize: 20),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Function to save answers
+  Future<void> _saveAnswers() async {
+    final prefs = await SharedPreferences.getInstance();
+    for (int i = 0; i < selectedAnswers.length; i++) {
+      if (selectedAnswers[i] != null) {
+        await prefs.setInt(
+            '${widget.playerName}_answer_$i', selectedAnswers[i]!);
+      }
+    }
+  }
+
+  // Function to load saved answers
+  Future<void> _loadSavedAnswers() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      for (int i = 0; i < selectedAnswers.length; i++) {
+        selectedAnswers[i] = prefs.getInt('${widget.playerName}_answer_$i');
+      }
+    });
+  }
+
+  // Function to clear saved answers for a specific player
+  Future<void> _clearSavedAnswers() async {
+    final prefs = await SharedPreferences.getInstance();
+    for (int i = 0; i < selectedAnswers.length; i++) {
+      await prefs.remove('${widget.playerName}_answer_$i');
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSavedAnswers();
+  }
+
+  @override
+  void dispose() {
+    _clearSavedAnswers(); // Clear answers when leaving the page
+    super.dispose();
   }
 
   @override
@@ -174,7 +265,20 @@ class _SurveyPageState extends State<SurveyPage> {
             ),
             ListTile(
               title: Text('Map of PFT'),
-              onTap: () {},
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const MapPage(),
+                  ),
+                );
+              },
+            ),
+            ListTile(
+              title: Text('Quiz Leaderboard'),
+              onTap: () {
+                _showQuizLeaderboard();
+              },
             ),
           ],
         ),
@@ -193,6 +297,7 @@ class _SurveyPageState extends State<SurveyPage> {
                   setState(() {
                     selectedAnswers[index] = value;
                   });
+                  _saveAnswers(); // Save answers whenever they change
                 },
               );
             }),
@@ -206,11 +311,53 @@ class _SurveyPageState extends State<SurveyPage> {
                   context: context,
                   builder: (_) => AlertDialog(
                     title: Text('Your Score'),
-                    content: Text('You got $score out of 10 correct!'),
+                    content: SingleChildScrollView(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            'You got $score out of 10 correct!',
+                            style: TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.bold),
+                          ),
+                          SizedBox(height: 20),
+                          Text(
+                            'Quiz Leaderboard',
+                            style: TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.bold),
+                          ),
+                          SizedBox(height: 10),
+                          QuizLeaderboardData.quizScores.isEmpty
+                              ? Text("No quiz scores yet.",
+                                  style: TextStyle(fontSize: 16))
+                              : Column(
+                                  children: QuizLeaderboardData.quizScores
+                                      .map((player) {
+                                    return Text(
+                                      '${player['name']} - ${player['score']}/10',
+                                      style: TextStyle(fontSize: 16),
+                                    );
+                                  }).toList(),
+                                ),
+                        ],
+                      ),
+                    ),
                     actions: [
                       TextButton(
                         onPressed: () => Navigator.pop(context),
                         child: Text('Close'),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.pop(context); // Close dialog
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const StartPage(),
+                            ),
+                          );
+                        },
+                        child: Text('Return Home'),
                       ),
                     ],
                   ),
@@ -627,7 +774,14 @@ class _ISpyPageState extends State<ISpyPage> {
             ),
             ListTile(
               title: Text('Map of PFT'),
-              onTap: () {},
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const MapPage(),
+                  ),
+                );
+              },
             ),
           ],
         ),
@@ -1033,6 +1187,31 @@ class _ISpyPageState extends State<ISpyPage> {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class MapPage extends StatelessWidget {
+  const MapPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Map of PFT'),
+      ),
+      body: Center(
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              Image.asset(
+                'images/PFTMap.png',
+                fit: BoxFit.contain,
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
