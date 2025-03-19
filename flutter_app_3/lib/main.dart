@@ -43,10 +43,12 @@ class MyApp extends StatelessWidget {
 
 class SurveyPage extends StatefulWidget {
   final String playerName;
+  final bool hasPreviousAnswers;
 
   const SurveyPage({
     super.key,
     required this.playerName,
+    this.hasPreviousAnswers = false,
   });
 
   @override
@@ -178,6 +180,16 @@ class _SurveyPageState extends State<SurveyPage> {
     );
   }
 
+  // Function to load saved answers
+  Future<void> _loadSavedAnswers() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      for (int i = 0; i < selectedAnswers.length; i++) {
+        selectedAnswers[i] = prefs.getInt('${widget.playerName}_answer_$i');
+      }
+    });
+  }
+
   // Function to save answers
   Future<void> _saveAnswers() async {
     final prefs = await SharedPreferences.getInstance();
@@ -187,16 +199,6 @@ class _SurveyPageState extends State<SurveyPage> {
             '${widget.playerName}_answer_$i', selectedAnswers[i]!);
       }
     }
-  }
-
-  // Function to load saved answers
-  Future<void> _loadSavedAnswers() async {
-    final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      for (int i = 0; i < selectedAnswers.length; i++) {
-        selectedAnswers[i] = prefs.getInt('${widget.playerName}_answer_$i');
-      }
-    });
   }
 
   // Function to clear saved answers for a specific player
@@ -210,12 +212,17 @@ class _SurveyPageState extends State<SurveyPage> {
   @override
   void initState() {
     super.initState();
-    _loadSavedAnswers();
+    if (widget.hasPreviousAnswers) {
+      _loadSavedAnswers();
+    }
   }
 
   @override
   void dispose() {
-    _clearSavedAnswers(); // Clear answers when leaving the page
+    // Only clear answers if the player is starting a new game
+    if (!widget.hasPreviousAnswers) {
+      _clearSavedAnswers();
+    }
     super.dispose();
   }
 
@@ -247,8 +254,11 @@ class _SurveyPageState extends State<SurveyPage> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) =>
-                          ISpyPage(index: 0, objectsFound: 0, playerName: '')),
+                      builder: (context) => ISpyPage(
+                          index: 0,
+                          objectsFound: 0,
+                          playerName: '',
+                          hasPreviousAnswers: widget.hasPreviousAnswers)),
                 );
               },
             ),
@@ -258,8 +268,10 @@ class _SurveyPageState extends State<SurveyPage> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) =>
-                          SurveyPage(playerName: widget.playerName)),
+                      builder: (context) => SurveyPage(
+                            playerName: widget.playerName,
+                            hasPreviousAnswers: widget.hasPreviousAnswers,
+                          )),
                 );
               },
             ),
@@ -423,12 +435,22 @@ class _StartPageState extends State<StartPage> {
     super.initState();
   }
 
-  void _startGame() {
+  Future<bool> _hasPreviousAnswers(String name) async {
+    final prefs = await SharedPreferences.getInstance();
+    // Check if any answers exist for this name
+    return prefs.getInt('${name}_answer_0') != null;
+  }
+
+  void _startGame() async {
     if (_nameController.text.isNotEmpty) {
       setState(() {
         _gameStarted = true;
       });
-      // Navigate to the ISpyPage with the provided player name using standard transition
+
+      // Check if this player has previous answers
+      bool hasPreviousAnswers = await _hasPreviousAnswers(_nameController.text);
+
+      // Navigate to the ISpyPage with the provided player name
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
@@ -436,6 +458,7 @@ class _StartPageState extends State<StartPage> {
             index: 0,
             objectsFound: 0,
             playerName: _nameController.text,
+            hasPreviousAnswers: hasPreviousAnswers,
           ),
         ),
       );
@@ -662,6 +685,7 @@ class ISpyPage extends StatefulWidget {
   final int index;
   final int objectsFound;
   final String playerName;
+  final bool hasPreviousAnswers;
 
   // List of background images for each scavenger hunt page
   static const List<String> images = [
@@ -719,6 +743,7 @@ class ISpyPage extends StatefulWidget {
     required this.index,
     required this.objectsFound,
     required this.playerName,
+    this.hasPreviousAnswers = false,
   });
 
   @override
@@ -757,6 +782,7 @@ class _ISpyPageState extends State<ISpyPage> {
                             index: widget.index,
                             objectsFound: widget.objectsFound,
                             playerName: widget.playerName,
+                            hasPreviousAnswers: widget.hasPreviousAnswers,
                           )),
                 );
               },
@@ -767,8 +793,10 @@ class _ISpyPageState extends State<ISpyPage> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) =>
-                          SurveyPage(playerName: widget.playerName)),
+                      builder: (context) => SurveyPage(
+                            playerName: widget.playerName,
+                            hasPreviousAnswers: widget.hasPreviousAnswers,
+                          )),
                 );
               },
             ),
@@ -905,6 +933,8 @@ class _ISpyPageState extends State<ISpyPage> {
                                             index: widget.index + 1,
                                             objectsFound: updatedObjectsFound,
                                             playerName: widget.playerName,
+                                            hasPreviousAnswers:
+                                                widget.hasPreviousAnswers,
                                           ),
                                         ),
                                       );
@@ -991,6 +1021,8 @@ class _ISpyPageState extends State<ISpyPage> {
                                     index: widget.index - 1,
                                     objectsFound: widget.objectsFound,
                                     playerName: widget.playerName,
+                                    hasPreviousAnswers:
+                                        widget.hasPreviousAnswers,
                                   ),
                                 ),
                               );
@@ -1028,6 +1060,8 @@ class _ISpyPageState extends State<ISpyPage> {
                                     index: widget.index + 1,
                                     objectsFound: widget.objectsFound,
                                     playerName: widget.playerName,
+                                    hasPreviousAnswers:
+                                        widget.hasPreviousAnswers,
                                   ),
                                 ),
                               );
