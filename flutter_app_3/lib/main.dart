@@ -36,7 +36,396 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
         fontFamily: 'Proxima',
       ),
-      home: const StartPage(),
+      home: const HomePage(),
+    );
+  }
+}
+
+class HomePage extends StatefulWidget {
+  const HomePage({super.key});
+
+  @override
+  _HomePageState createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  final TextEditingController _nameController = TextEditingController();
+  bool _gameStarted = false;
+
+  Future<bool> _hasPreviousAnswers(String name) async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getInt('${name}_answer_0') != null;
+  }
+
+  void _startGame() async {
+    if (_nameController.text.isNotEmpty) {
+      setState(() {
+        _gameStarted = true;
+      });
+
+      // Check if this player has previous answers
+      bool hasPreviousAnswers = await _hasPreviousAnswers(_nameController.text);
+
+      // Navigate to the ISpyPage with the provided player name
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ISpyPage(
+            index: 0,
+            objectsFound: 0,
+            playerName: _nameController.text,
+            hasPreviousAnswers: hasPreviousAnswers,
+          ),
+        ),
+      );
+    } else {
+      _showErrorDialog();
+    }
+  }
+
+  void _showErrorDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Error"),
+        content: const Text("Please enter your name to start the game."),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: const Text("OK"),
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('PFT Scavenger Hunt'),
+        backgroundColor: const Color.fromARGB(255, 70, 29, 124),
+        foregroundColor: const Color.fromARGB(255, 253, 208, 35),
+      ),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: <Widget>[
+            DrawerHeader(
+              decoration: BoxDecoration(
+                color: Color.fromARGB(255, 70, 29, 124),
+              ),
+              child: Text(
+                'Navigation',
+                style: TextStyle(
+                  color: const Color.fromARGB(255, 253, 208, 35),
+                  fontSize: 24,
+                ),
+              ),
+            ),
+            ListTile(
+              leading:
+                  Icon(Icons.home, color: Color.fromARGB(255, 70, 29, 124)),
+              title: const Text('Home'),
+              onTap: () {
+                Navigator.pop(context); // Close drawer
+              },
+            ),
+            ListTile(
+              leading:
+                  Icon(Icons.search, color: Color.fromARGB(255, 70, 29, 124)),
+              title: const Text('iSpy Game'),
+              onTap: () {
+                if (_nameController.text.isNotEmpty) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ISpyPage(
+                        index: 0,
+                        objectsFound: 0,
+                        playerName: _nameController.text,
+                        hasPreviousAnswers: false,
+                      ),
+                    ),
+                  );
+                } else {
+                  _showErrorDialog();
+                }
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.map, color: Color.fromARGB(255, 70, 29, 124)),
+              title: const Text('PFT Map'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const MapPage(),
+                  ),
+                );
+              },
+            ),
+            ListTile(
+              leading:
+                  Icon(Icons.quiz, color: Color.fromARGB(255, 70, 29, 124)),
+              title: const Text('Interactive Quiz'),
+              onTap: () {
+                if (_nameController.text.isNotEmpty) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => SurveyPage(
+                        playerName: _nameController.text,
+                        hasPreviousAnswers: false,
+                      ),
+                    ),
+                  );
+                } else {
+                  _showErrorDialog();
+                }
+              },
+            ),
+            ListTile(
+              leading:
+                  Icon(Icons.info, color: Color.fromARGB(255, 70, 29, 124)),
+              title: const Text('About'),
+              onTap: () {
+                Navigator.pop(context); // Close drawer
+                showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title: const Text(
+                      'About PFT Scavenger Hunt',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Color.fromARGB(255, 70, 29, 124),
+                      ),
+                    ),
+                    content: const SingleChildScrollView(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Welcome to the Patrick F. Taylor Hall Scavenger Hunt! This interactive app helps you explore and learn about PFT through three main activities:',
+                            style: TextStyle(fontSize: 16),
+                          ),
+                          SizedBox(height: 10),
+                          Text(
+                            '1. iSpy Game:',
+                            style: TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.bold),
+                          ),
+                          Text(
+                            '• Navigate through PFT and find hidden objects\n• Learn about different areas and features\n• Track your progress and score',
+                            style: TextStyle(fontSize: 16),
+                          ),
+                          SizedBox(height: 10),
+                          Text(
+                            '2. Interactive Quiz:',
+                            style: TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.bold),
+                          ),
+                          Text(
+                            '• Test your knowledge about PFT and LSU\n• Answer questions about history and facilities\n• Track your score on the leaderboard',
+                            style: TextStyle(fontSize: 16),
+                          ),
+                          SizedBox(height: 10),
+                          Text(
+                            '3. PFT Map:',
+                            style: TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.bold),
+                          ),
+                          Text(
+                            '• View the complete layout of PFT\n• Locate important areas and facilities\n• Plan your visit or find your way around',
+                            style: TextStyle(fontSize: 16),
+                          ),
+                        ],
+                      ),
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: const Text(
+                          'Close',
+                          style: TextStyle(fontSize: 16),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
+      ),
+      body: SingleChildScrollView(
+        child: Center(
+          child: Stack(
+            children: [
+              // Background image
+              SizedBox(
+                width: double.infinity,
+                height: MediaQuery.of(context).size.height,
+                child: Opacity(
+                  opacity: 0.62,
+                  child: FittedBox(
+                    fit: BoxFit.fill,
+                    child: Image.asset('images/cover.png'),
+                  ),
+                ),
+              ),
+              // LSU logo
+              Positioned(
+                top: 60,
+                left: 0,
+                right: 0,
+                child: Image.asset(
+                  'images/lsu.png',
+                  width: 40,
+                  height: 40,
+                ),
+              ),
+              // Welcome text
+              Positioned(
+                top: 120,
+                left: 0,
+                right: 0,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: const Color.fromARGB(255, 241, 238, 219),
+                      border:
+                          Border.all(color: Color.fromARGB(255, 86, 29, 124)),
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: Text(
+                      "Welcome to the LSU: Patrick F. Taylor Hall Scavenger Hunt! \n In this app, you will navigate through a series of iSpy-themed questions, followed by more in-depth, specific questions that will require you to find the location within the iSpy game. \nGood luck and have fun! \n\nEnter your name and tap 'Start' to begin.",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 15,
+                        color: Color.fromARGB(255, 86, 29, 124),
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              // Name entry and Start button
+              Positioned(
+                bottom: MediaQuery.of(context).size.height * 0.15,
+                left: 0,
+                right: 0,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: TextField(
+                        controller: _nameController,
+                        decoration: const InputDecoration(
+                          labelText: "Enter Your Name",
+                          labelStyle: TextStyle(color: Colors.white),
+                          filled: true,
+                          fillColor: Colors.black45,
+                        ),
+                        style: const TextStyle(color: Colors.white),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    ElevatedButton(
+                      onPressed: _gameStarted ? null : _startGame,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color.fromARGB(255, 70, 29, 124),
+                        foregroundColor:
+                            const Color.fromARGB(255, 253, 208, 35),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 40, vertical: 15),
+                        minimumSize: const Size(200, 50),
+                      ),
+                      child: const Text(
+                        'Start Scavenger Hunt',
+                        style: TextStyle(fontSize: 20),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    // Activity buttons
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: ElevatedButton(
+                        onPressed: () {
+                          if (_nameController.text.isNotEmpty) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const MapPage(),
+                              ),
+                            );
+                          } else {
+                            _showErrorDialog();
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor:
+                              const Color.fromARGB(255, 70, 29, 124),
+                          foregroundColor:
+                              const Color.fromARGB(255, 253, 208, 35),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 40, vertical: 15),
+                          minimumSize: const Size(200, 50),
+                        ),
+                        child: const Text(
+                          'View PFT Map',
+                          style: TextStyle(fontSize: 20),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: ElevatedButton(
+                        onPressed: () {
+                          if (_nameController.text.isNotEmpty) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => SurveyPage(
+                                  playerName: _nameController.text,
+                                  hasPreviousAnswers: false,
+                                ),
+                              ),
+                            );
+                          } else {
+                            _showErrorDialog();
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor:
+                              const Color.fromARGB(255, 70, 29, 124),
+                          foregroundColor:
+                              const Color.fromARGB(255, 253, 208, 35),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 40, vertical: 15),
+                          minimumSize: const Size(200, 50),
+                        ),
+                        child: const Text(
+                          'Take the Quiz',
+                          style: TextStyle(fontSize: 20),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
@@ -365,7 +754,7 @@ class _SurveyPageState extends State<SurveyPage> {
                           Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => const StartPage(),
+                              builder: (context) => const HomePage(),
                             ),
                           );
                         },
@@ -979,7 +1368,7 @@ class _ISpyPageState extends State<ISpyPage> {
                           Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => const StartPage(),
+                              builder: (context) => const HomePage(),
                             ),
                           );
                         },
@@ -1156,7 +1545,7 @@ class _ISpyPageState extends State<ISpyPage> {
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => const StartPage(),
+                  builder: (context) => const HomePage(),
                 ),
               );
             },
@@ -1211,7 +1600,7 @@ class _ISpyPageState extends State<ISpyPage> {
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => const StartPage(),
+                  builder: (context) => const HomePage(),
                 ),
               );
             },
