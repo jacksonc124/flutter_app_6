@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-
 void main() {
   runApp(const MyApp());
 }
@@ -14,7 +13,6 @@ class LeaderboardData {
     scores.sort((a, b) => b['score'].compareTo(a['score']));
   }
 }
-
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -33,6 +31,13 @@ class MyApp extends StatelessWidget {
 }
 
 class SurveyPage extends StatefulWidget {
+  final String playerName;
+
+  const SurveyPage({
+    super.key,
+    required this.playerName,
+  });
+
   @override
   _SurveyPageState createState() => _SurveyPageState();
 }
@@ -44,43 +49,68 @@ class _SurveyPageState extends State<SurveyPage> {
   // List of questions
   final List<String> questions = [
     'What program did Patrick F. Taylor develop?',
-    'What is your favorite food?',
-    'What is your favorite sport?',
-    'What is your favorite animal?',
-    'What is your favorite movie?',
-    'What is your favorite book?',
-    'What is your favorite music genre?',
-    'What is your favorite season?',
-    'What is your favorite holiday?',
-    'What is your favorite vacation destination?',
+    'What year was Patrick F. Taylor Hall built?',
+    'What is the name of the engineering honor society in PFT?',
+    'What is the main color scheme of PFT?',
+    'What is the name of the simulation lab in PFT?',
+    'What is the name of the food establishment in PFT?',
+    'What is the name of the card used to enter LSU campus spaces?',
+    'What is the name of the center for distinguished communicators in PFT?',
+    'What is the name of the engineering program at LSU?',
+    'What is the name of the main entrance to PFT?',
   ];
 
   // List of options for each question
   final List<List<String>> options = [
-    ['LSU Marching Band', 'New Orleans Saints', 'Taylor Opportunity Program for Students (TOPS)', 'PFT Tour Guides of'],
-    ['Pizza', 'Burger', 'Pasta', 'Sushi'],
-    ['Football', 'Basketball', 'Tennis', 'Cricket'],
-    ['Dog', 'Cat', 'Bird', 'Fish'],
-    ['Action', 'Comedy', 'Drama', 'Horror'],
-    ['Fiction', 'Non-fiction', 'Fantasy', 'Science'],
-    ['Pop', 'Rock', 'Classical', 'Jazz'],
-    ['Winter', 'Spring', 'Summer', 'Fall'],
-    ['Christmas', 'Halloween', 'Thanksgiving', 'New Year'],
-    ['Beach', 'Mountains', 'City', 'Countryside'],
+    [
+      'LSU Marching Band',
+      'New Orleans Saints',
+      'Taylor Opportunity Program for Students (TOPS)',
+      'PFT Tour Guides'
+    ],
+    ['1990', '1995', '2000', '2005'],
+    [
+      'Tau Beta Pi',
+      'Phi Beta Kappa',
+      'Sigma Alpha Epsilon',
+      'Delta Delta Delta'
+    ],
+    ['Purple and Gold', 'Red and Black', 'Blue and White', 'Green and Yellow'],
+    [
+      'Traffic Simulation Lab',
+      'Car Room',
+      'Transportation Lab',
+      'Vehicle Testing Center'
+    ],
+    ['Panera Bread', 'Starbucks', 'Subway', 'Chick-fil-A'],
+    ['Tiger Card', 'LSU Card', 'Student ID', 'Access Card'],
+    [
+      'Chevron Center',
+      'Communication Hub',
+      'Engineering Center',
+      'Student Success Center'
+    ],
+    [
+      'College of Engineering',
+      'School of Engineering',
+      'Department of Engineering',
+      'Engineering Institute'
+    ],
+    ['Main Entrance', 'North Entrance', 'South Entrance', 'West Entrance'],
   ];
 
   // List of correct answers for each question (index of the correct answer in the options list)
   final List<int> correctAnswers = [
-    3, // TOPS
-    0, // Pizza
-    2, // Tennis
-    0, // Dog
-    1, // Comedy
-    2, // Fantasy
-    0, // Pop
-    3, // Fall
-    0, // Christmas
-    1, // Mountains
+    2, // TOPS
+    0, // 1990
+    0, // Tau Beta Pi
+    0, // Purple and Gold
+    1, // Car Room
+    0, // Panera Bread
+    0, // Tiger Card
+    0, // Chevron Center
+    0, // College of Engineering
+    0, // Main Entrance
   ];
 
   int score = 0; // To keep track of the score
@@ -102,10 +132,8 @@ class _SurveyPageState extends State<SurveyPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("'s Scavenger Hunt Answers"),
+        title: Text("${widget.playerName}'s PFT Quiz"),
       ),
-
-      
       drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
@@ -123,29 +151,30 @@ class _SurveyPageState extends State<SurveyPage> {
               ),
             ),
             ListTile(
-        title: const Text('iSpy'),
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => ISpyPage(index: 0,
-                                    objectsFound: 0,
-                                    playerName: '')),
-          );
-        },
-      ),
+              title: const Text('iSpy'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          ISpyPage(index: 0, objectsFound: 0, playerName: '')),
+                );
+              },
+            ),
             ListTile(
               title: Text('Interactive Quiz'),
               onTap: () {
                 Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => SurveyPage()),
-          );// Close the drawer
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          SurveyPage(playerName: widget.playerName)),
+                );
               },
             ),
             ListTile(
               title: Text('Map of PFT'),
-              onTap: () {
-              },
+              onTap: () {},
             ),
           ],
         ),
@@ -232,7 +261,6 @@ class QuestionWidget extends StatelessWidget {
   }
 }
 
-
 class StartPage extends StatefulWidget {
   const StartPage({super.key});
   @override
@@ -260,7 +288,6 @@ class _StartPageState extends State<StartPage> {
           builder: (context) => ISpyPage(
             index: 0,
             objectsFound: 0,
-           
             playerName: _nameController.text,
           ),
         ),
@@ -273,7 +300,7 @@ class _StartPageState extends State<StartPage> {
   void _restartGame() {
     setState(() {
       _gameStarted = false;
-   });
+    });
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
@@ -368,10 +395,10 @@ class _StartPageState extends State<StartPage> {
                 width: double.infinity,
                 height: MediaQuery.of(context).size.height,
                 child: Opacity(
-                opacity: 0.62, // Adjust the opacity value as needed
-                child: FittedBox(
-                fit: BoxFit.fill,
-                child: Image.asset('images/cover.png'),
+                  opacity: 0.62, // Adjust the opacity value as needed
+                  child: FittedBox(
+                    fit: BoxFit.fill,
+                    child: Image.asset('images/cover.png'),
                   ),
                 ),
               ),
@@ -380,37 +407,39 @@ class _StartPageState extends State<StartPage> {
                 top: 60,
                 left: 0,
                 right: 0,
-                child: Image.asset('images/lsu.png',
+                child: Image.asset(
+                  'images/lsu.png',
                   width: 40,
                   height: 40,
                 ),
               ),
- // Instructional text beneath the LSU image
-  Positioned(
-    top: 120,
-    left: 0,
-    right: 0,
-    child: Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Container(
-        padding: const EdgeInsets.all(10),
-        decoration: BoxDecoration(
-          color: const Color.fromARGB(255,241, 238,219),
-          border: Border.all(color: Color.fromARGB(255, 86, 29, 124)),
-          borderRadius: BorderRadius.circular(6),
-        ),
-        child: Text(
-          "Welcome to the LSU: Patrick F. Taylor Hall Scavenger Hunt! \n In this app, you will navigate through a series of iSpy-themed questions, followed by more in-depth, specific questions that will require you to find the location within the iSpy game. \nGood luck and have fun! \n\nEnter your name and tap 'Start' to begin.",
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            fontSize: 15,
-            color: Color.fromARGB(255, 86, 29, 124),
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ),
-    ),
-  ),
+              // Instructional text beneath the LSU image
+              Positioned(
+                top: 120,
+                left: 0,
+                right: 0,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: const Color.fromARGB(255, 241, 238, 219),
+                      border:
+                          Border.all(color: Color.fromARGB(255, 86, 29, 124)),
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: Text(
+                      "Welcome to the LSU: Patrick F. Taylor Hall Scavenger Hunt! \n In this app, you will navigate through a series of iSpy-themed questions, followed by more in-depth, specific questions that will require you to find the location within the iSpy game. \nGood luck and have fun! \n\nEnter your name and tap 'Start' to begin.",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 15,
+                        color: Color.fromARGB(255, 86, 29, 124),
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
 
               // Name entry, Start button, and View Leaderboard button positioned near the bottom
               Positioned(
@@ -482,13 +511,10 @@ class _StartPageState extends State<StartPage> {
   }
 }
 
-
 class ISpyPage extends StatefulWidget {
   final int index;
   final int objectsFound;
   final String playerName;
-
-  
 
   // List of background images for each scavenger hunt page
   static const List<String> images = [
@@ -530,16 +556,16 @@ class ISpyPage extends StatefulWidget {
   ];
 
   static const List<String> objectDescriptions = [
-  'You can enter the PFT using the main entrance!',
-  'Also known as the car room, students use this simulation lab to study traffic, highway design, saftey, and more!',
-  'The engineering honor society was established in 1936!',
-  'You can order food using one of the Panera Bread kiosks!',
-  'You can get your Tiger Card at the tiger card kiosk in zone 1300!',
-  'Professors may sometimes tape class notices on the door, pay attention!',
-  'The missing brick fits in the in the bottom left of the pavement!',
-  'Security cameras monitor various parts of the building, ensuring your saftey!',
-  'The Chevron Center is a resource for engineers interested in becoming a distinguished communicator!',
-];
+    'You can enter the PFT using the main entrance!',
+    'Also known as the car room, students use this simulation lab to study traffic, highway design, saftey, and more!',
+    'The engineering honor society was established in 1936!',
+    'You can order food using one of the Panera Bread kiosks!',
+    'You can get your Tiger Card at the tiger card kiosk in zone 1300!',
+    'Professors may sometimes tape class notices on the door, pay attention!',
+    'The missing brick fits in the in the bottom left of the pavement!',
+    'Security cameras monitor various parts of the building, ensuring your saftey!',
+    'The Chevron Center is a resource for engineers interested in becoming a distinguished communicator!',
+  ];
 
   const ISpyPage({
     super.key,
@@ -557,9 +583,7 @@ class _ISpyPageState extends State<ISpyPage> {
 
   @override
   Widget build(BuildContext context) {
-    
     return Scaffold(
-
       drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
@@ -577,29 +601,33 @@ class _ISpyPageState extends State<ISpyPage> {
               ),
             ),
             ListTile(
-        title: const Text('iSpy'),
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => ISpyPage(index: widget.index,
-                                    objectsFound: widget.objectsFound,
-                                    playerName: widget.playerName,)),
-          );
-        },
-      ),
+              title: const Text('iSpy'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => ISpyPage(
+                            index: widget.index,
+                            objectsFound: widget.objectsFound,
+                            playerName: widget.playerName,
+                          )),
+                );
+              },
+            ),
             ListTile(
               title: Text('Interactive Quiz'),
               onTap: () {
                 Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => SurveyPage()),
-          );// Close the drawer
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          SurveyPage(playerName: widget.playerName)),
+                );
               },
             ),
-             ListTile(
+            ListTile(
               title: Text('Map of PFT'),
-              onTap: () {
-              },
+              onTap: () {},
             ),
           ],
         ),
@@ -612,26 +640,27 @@ class _ISpyPageState extends State<ISpyPage> {
       body: Column(
         children: [
           // Display the question and current objects found
-          Container(      
-  color: const Color.fromARGB(255, 70, 29, 124),
-  width: double.infinity,
-  padding: const EdgeInsets.symmetric(vertical: 5),
-  child: Column(
-    mainAxisAlignment: MainAxisAlignment.center, // Center vertically
-    crossAxisAlignment: CrossAxisAlignment.center, // Center horizontally
-    children: [
-      Text(
-        ISpyPage.objectNames[widget.index],
-        style: const TextStyle(
-          fontSize: 20,
-          fontWeight: FontWeight.bold,
-          color: const Color.fromARGB(255, 241, 238, 219),
-        ),
-        textAlign: TextAlign.center, // Center text within its box
-      ),
-      const SizedBox(height: 5),
-      // Divider to indicate the page progress
-                  Row(
+          Container(
+            color: const Color.fromARGB(255, 70, 29, 124),
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(vertical: 5),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center, // Center vertically
+              crossAxisAlignment:
+                  CrossAxisAlignment.center, // Center horizontally
+              children: [
+                Text(
+                  ISpyPage.objectNames[widget.index],
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: const Color.fromARGB(255, 241, 238, 219),
+                  ),
+                  textAlign: TextAlign.center, // Center text within its box
+                ),
+                const SizedBox(height: 5),
+                // Divider to indicate the page progress
+                Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: List.generate(
                     ISpyPage.images.length,
@@ -649,8 +678,8 @@ class _ISpyPageState extends State<ISpyPage> {
                   ),
                 ),
               ],
-  ),
-),
+            ),
+          ),
           // Game area with image and clickable target
           Expanded(
             child: LayoutBuilder(
@@ -682,29 +711,36 @@ class _ISpyPageState extends State<ISpyPage> {
                           showDialog(
                             context: context,
                             builder: (context) => AlertDialog(
-                              title: const Text("Great Job!", 
-                              style: TextStyle(
-                               fontSize: 15,
-                               color: Color.fromARGB(255, 86, 29, 124),
-                               fontWeight: FontWeight.bold,
-                               ),),
-                              content: Text(ISpyPage.objectDescriptions[widget.index],
-                              style: TextStyle(
-                                fontSize: 15,
-                                color: Color.fromARGB(255, 86, 29, 124),
-                                fontWeight: FontWeight.bold,
-                                ),),
+                              title: const Text(
+                                "Great Job!",
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  color: Color.fromARGB(255, 86, 29, 124),
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              content: Text(
+                                ISpyPage.objectDescriptions[widget.index],
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  color: Color.fromARGB(255, 86, 29, 124),
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                               actions: [
                                 TextButton(
                                   onPressed: () {
-                                    Navigator.pop(context); // Close the popup first
+                                    Navigator.pop(
+                                        context); // Close the popup first
                                     setState(() {
                                       _isClicked = false;
                                     });
-                                    int updatedObjectsFound = widget.objectsFound + 1;
+                                    int updatedObjectsFound =
+                                        widget.objectsFound + 1;
 
                                     // If all objects are found, show final score
-                                    if (updatedObjectsFound == ISpyPage.images.length) {
+                                    if (updatedObjectsFound ==
+                                        ISpyPage.images.length) {
                                       _showFinalScore(context);
                                     } else {
                                       // else, move to the next page
@@ -720,12 +756,14 @@ class _ISpyPageState extends State<ISpyPage> {
                                       );
                                     }
                                   },
-                                  child: const Text("Continue", 
-                                  style: TextStyle(
-                                    fontSize: 15,
-                                    color: Color.fromARGB(255, 86, 29, 124),
-                                    fontWeight: FontWeight.bold,
-                                  ),),
+                                  child: const Text(
+                                    "Continue",
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      color: Color.fromARGB(255, 86, 29, 124),
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
                                 ),
                               ],
                             ),
@@ -750,7 +788,6 @@ class _ISpyPageState extends State<ISpyPage> {
 
                     // Restart button
                     Positioned(
-
                       top: 20,
                       right: 20,
                       child: ElevatedButton(
@@ -771,94 +808,103 @@ class _ISpyPageState extends State<ISpyPage> {
                         ),
                       ),
                     ),
-if (widget.index > 0)
-  Positioned(
-    bottom: 20,
-    left: 20,
-    child: IconButton(
-      icon: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,  // White background color inside the border
-          border: Border.all(
-            color: const Color.fromARGB(255, 253, 208, 35),  // Yellow border color
-            width: 3,  // Border width
-          ),
-          borderRadius: BorderRadius.circular(10), // Optional: rounded corners
-        ),
-        child: const Icon(Icons.arrow_back, size: 50),
-      ),
-      color: Color.fromARGB(255, 86, 29, 124),
-      onPressed: () {
-        if (widget.index > 0) {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => ISpyPage(
-                index: widget.index - 1,
-                objectsFound: widget.objectsFound,
-                playerName: widget.playerName,
-              ),
-            ),
-          );
-        }
-      },
-    ),
-  ),
-  // Right arrow button
-  if (widget.index < ISpyPage.images.length -1)
-  Positioned(
-    right: 20,
-    bottom: 20,
-    child: IconButton(
-      icon: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,  // White background color inside the border
-          border: Border.all(
-            color: const Color.fromARGB(255, 253, 208, 35),  // Yellow border color
-            width: 3,  // Border width
-          ),
-          borderRadius: BorderRadius.circular(10), // Optional: rounded corners
-        ),
-        child: const Icon(Icons.arrow_forward, size: 50),
-      ),
-      color: Color.fromARGB(255, 86, 29, 124),
-      onPressed: () {
-        if (widget.index < ISpyPage.images.length - 1) {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => ISpyPage(
-                index: widget.index + 1,
-                objectsFound: widget.objectsFound,
-                playerName: widget.playerName,
-              ),
-            ),
-          );
-        } 
-      },
-    ),
-  ), 
-  Positioned(
-    left: 20,
-    top: 20,
-    child: IconButton(
-      icon: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,  // White background color inside the border
-          border: Border.all(
-            color: const Color.fromARGB(255, 253, 208, 35),  // Yellow border color
-            width: 3,  // Border width
-          ),
-          borderRadius: BorderRadius.circular(10), // Optional: rounded corners
-        ),
-        child: const Icon(Icons.menu, size: 50),
-      ),
-      color: Color.fromARGB(255, 86, 29, 124),
-      onPressed: () {
-        Scaffold.of(context).openDrawer();
-      },
-    ),
-  ),          
+                    if (widget.index > 0)
+                      Positioned(
+                        bottom: 20,
+                        left: 20,
+                        child: IconButton(
+                          icon: Container(
+                            decoration: BoxDecoration(
+                              color: Colors
+                                  .white, // White background color inside the border
+                              border: Border.all(
+                                color: const Color.fromARGB(
+                                    255, 253, 208, 35), // Yellow border color
+                                width: 3, // Border width
+                              ),
+                              borderRadius: BorderRadius.circular(
+                                  10), // Optional: rounded corners
+                            ),
+                            child: const Icon(Icons.arrow_back, size: 50),
+                          ),
+                          color: Color.fromARGB(255, 86, 29, 124),
+                          onPressed: () {
+                            if (widget.index > 0) {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => ISpyPage(
+                                    index: widget.index - 1,
+                                    objectsFound: widget.objectsFound,
+                                    playerName: widget.playerName,
+                                  ),
+                                ),
+                              );
+                            }
+                          },
+                        ),
+                      ),
+                    // Right arrow button
+                    if (widget.index < ISpyPage.images.length - 1)
+                      Positioned(
+                        right: 20,
+                        bottom: 20,
+                        child: IconButton(
+                          icon: Container(
+                            decoration: BoxDecoration(
+                              color: Colors
+                                  .white, // White background color inside the border
+                              border: Border.all(
+                                color: const Color.fromARGB(
+                                    255, 253, 208, 35), // Yellow border color
+                                width: 3, // Border width
+                              ),
+                              borderRadius: BorderRadius.circular(
+                                  10), // Optional: rounded corners
+                            ),
+                            child: const Icon(Icons.arrow_forward, size: 50),
+                          ),
+                          color: Color.fromARGB(255, 86, 29, 124),
+                          onPressed: () {
+                            if (widget.index < ISpyPage.images.length - 1) {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => ISpyPage(
+                                    index: widget.index + 1,
+                                    objectsFound: widget.objectsFound,
+                                    playerName: widget.playerName,
+                                  ),
+                                ),
+                              );
+                            }
+                          },
+                        ),
+                      ),
+                    Positioned(
+                      left: 20,
+                      top: 20,
+                      child: IconButton(
+                        icon: Container(
+                          decoration: BoxDecoration(
+                            color: Colors
+                                .white, // White background color inside the border
+                            border: Border.all(
+                              color: const Color.fromARGB(
+                                  255, 253, 208, 35), // Yellow border color
+                              width: 3, // Border width
+                            ),
+                            borderRadius: BorderRadius.circular(
+                                10), // Optional: rounded corners
+                          ),
+                          child: const Icon(Icons.menu, size: 50),
+                        ),
+                        color: Color.fromARGB(255, 86, 29, 124),
+                        onPressed: () {
+                          Scaffold.of(context).openDrawer();
+                        },
+                      ),
+                    ),
                   ],
                 );
               },
