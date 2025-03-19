@@ -55,9 +55,9 @@ class _SurveyPageState extends State<SurveyPage> {
     'What is the name of the simulation lab in PFT?',
     'What is the name of the food establishment in PFT?',
     'What is the name of the card used to enter LSU campus spaces?',
-    'What is the name of the center for distinguished communicators in PFT?',
+    'What year was LSU\'s College of Engineering established?',
     'What is the name of the engineering program at LSU?',
-    'What is the name of the main entrance to PFT?',
+    'What is the name of the student organization that provides free tutoring in PFT?',
   ];
 
   // List of options for each question
@@ -84,19 +84,19 @@ class _SurveyPageState extends State<SurveyPage> {
     ],
     ['Panera Bread', 'Starbucks', 'Subway', 'Chick-fil-A'],
     ['Tiger Card', 'LSU Card', 'Student ID', 'Access Card'],
-    [
-      'Chevron Center',
-      'Communication Hub',
-      'Engineering Center',
-      'Student Success Center'
-    ],
+    ['1908', '1910', '1912', '1914'],
     [
       'College of Engineering',
       'School of Engineering',
       'Department of Engineering',
       'Engineering Institute'
     ],
-    ['Main Entrance', 'North Entrance', 'South Entrance', 'West Entrance'],
+    [
+      'Engineering Student Tutors',
+      'PFT Tutors',
+      'Engineering Success Center',
+      'Student Help Desk'
+    ],
   ];
 
   // List of correct answers for each question (index of the correct answer in the options list)
@@ -108,9 +108,9 @@ class _SurveyPageState extends State<SurveyPage> {
     1, // Car Room
     0, // Panera Bread
     0, // Tiger Card
-    0, // Chevron Center
+    0, // 1908
     0, // College of Engineering
-    0, // Main Entrance
+    2, // Engineering Success Center
   ];
 
   int score = 0; // To keep track of the score
