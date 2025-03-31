@@ -75,6 +75,7 @@ class _HomePageState extends State<HomePage> {
             objectsFound: 0,
             playerName: _nameController.text,
             hasPreviousAnswers: hasPreviousAnswers,
+            wrongAttempts: 0,
           ),
         ),
       );
@@ -147,6 +148,7 @@ class _HomePageState extends State<HomePage> {
                         objectsFound: 0,
                         playerName: _nameController.text,
                         hasPreviousAnswers: false,
+                        wrongAttempts: 0,
                       ),
                     ),
                   );
@@ -647,7 +649,8 @@ class _SurveyPageState extends State<SurveyPage> {
                           index: 0,
                           objectsFound: 0,
                           playerName: '',
-                          hasPreviousAnswers: widget.hasPreviousAnswers)),
+                          hasPreviousAnswers: widget.hasPreviousAnswers,
+                          wrongAttempts: 0)),
                 );
               },
             ),
@@ -779,7 +782,7 @@ class QuestionWidget extends StatelessWidget {
   final int? selectedAnswer;
   final ValueChanged<int?> onChanged;
 
-  QuestionWidget({
+  const QuestionWidget({super.key, 
     required this.question,
     required this.options,
     required this.selectedAnswer,
@@ -848,6 +851,7 @@ class _StartPageState extends State<StartPage> {
             objectsFound: 0,
             playerName: _nameController.text,
             hasPreviousAnswers: hasPreviousAnswers,
+            wrongAttempts: 0,
           ),
         ),
       );
@@ -1075,6 +1079,7 @@ class ISpyPage extends StatefulWidget {
   final int objectsFound;
   final String playerName;
   final bool hasPreviousAnswers;
+  final int wrongAttempts;
 
   // List of background images for each scavenger hunt page
   static const List<String> images = [
@@ -1133,6 +1138,7 @@ class ISpyPage extends StatefulWidget {
     required this.objectsFound,
     required this.playerName,
     this.hasPreviousAnswers = false,
+    this.wrongAttempts = 0,
   });
 
   @override
@@ -1141,6 +1147,8 @@ class ISpyPage extends StatefulWidget {
 
 class _ISpyPageState extends State<ISpyPage> {
   bool _isClicked = false;
+  bool _hasAttempted = false;
+  Offset? _tapPosition; // Add this to store tap position
 
   @override
   Widget build(BuildContext context) {
@@ -1172,6 +1180,7 @@ class _ISpyPageState extends State<ISpyPage> {
                             objectsFound: widget.objectsFound,
                             playerName: widget.playerName,
                             hasPreviousAnswers: widget.hasPreviousAnswers,
+                            wrongAttempts: widget.wrongAttempts,
                           )),
                 );
               },
@@ -1225,7 +1234,7 @@ class _ISpyPageState extends State<ISpyPage> {
                   style: const TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
-                    color: const Color.fromARGB(255, 241, 238, 219),
+                    color: Color.fromARGB(255, 241, 238, 219),
                   ),
                   textAlign: TextAlign.center, // Center text within its box
                 ),
@@ -1275,72 +1284,142 @@ class _ISpyPageState extends State<ISpyPage> {
                       top: correctY,
                       child: InkWell(
                         onTap: () {
-                          setState(() {
-                            _isClicked = true;
-                          });
-                          // Show a popup with the object's description
-                          showDialog(
-                            context: context,
-                            builder: (context) => AlertDialog(
-                              title: const Text(
-                                "Great Job!",
-                                style: TextStyle(
-                                  fontSize: 15,
-                                  color: Color.fromARGB(255, 86, 29, 124),
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              content: Text(
-                                ISpyPage.objectDescriptions[widget.index],
-                                style: TextStyle(
-                                  fontSize: 15,
-                                  color: Color.fromARGB(255, 86, 29, 124),
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              actions: [
-                                TextButton(
-                                  onPressed: () {
-                                    Navigator.pop(
-                                        context); // Close the popup first
-                                    setState(() {
-                                      _isClicked = false;
-                                    });
-                                    int updatedObjectsFound =
-                                        widget.objectsFound + 1;
+                          if (!_hasAttempted) {
+                            setState(() {
+                              _isClicked = true;
+                              _hasAttempted = true;
+                            });
 
-                                    // If all objects are found, show final score
-                                    if (updatedObjectsFound ==
-                                        ISpyPage.images.length) {
-                                      _showFinalScore(context);
-                                    } else {
-                                      // else, move to the next page
-                                      Navigator.pushReplacement(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) => ISpyPage(
-                                            index: widget.index + 1,
-                                            objectsFound: updatedObjectsFound,
-                                            playerName: widget.playerName,
-                                            hasPreviousAnswers:
-                                                widget.hasPreviousAnswers,
-                                          ),
-                                        ),
-                                      );
-                                    }
-                                  },
-                                  child: const Text(
-                                    "Continue",
+                            // Get the tap position
+                            final RenderBox box = context.findRenderObject() as RenderBox;
+                            final size = box.size;
+                            final position = box.localToGlobal(Offset.zero);
+                            
+                            double scaleX = size.width / 800;
+                            double scaleY = size.height / 920;
+                            double correctX = ISpyPage.correctPositions[widget.index].dx * scaleX;
+                            double correctY = ISpyPage.correctPositions[widget.index].dy * scaleY;
+                            
+                            // Add some tolerance for the tap area
+                            double tolerance = 30.0;
+                            bool isCorrect = (correctX - tolerance <= correctX && correctX <= correctX + tolerance) &&
+                                            (correctY - tolerance <= correctY && correctY <= correctY + tolerance);
+                            
+                            if (isCorrect) {
+                              // Show success dialog
+                              showDialog(
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                  title: const Text(
+                                    "Great Job!",
                                     style: TextStyle(
                                       fontSize: 15,
                                       color: Color.fromARGB(255, 86, 29, 124),
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
+                                  content: Text(
+                                    ISpyPage.objectDescriptions[widget.index],
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      color: Color.fromARGB(255, 86, 29, 124),
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                        setState(() {
+                                          _isClicked = false;
+                                        });
+                                        int updatedObjectsFound = widget.objectsFound + 1;
+
+                                        if (updatedObjectsFound == ISpyPage.images.length) {
+                                          _showFinalScore(context);
+                                        } else {
+                                          Navigator.pushReplacement(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) => ISpyPage(
+                                                index: widget.index + 1,
+                                                objectsFound: updatedObjectsFound,
+                                                playerName: widget.playerName,
+                                                hasPreviousAnswers: widget.hasPreviousAnswers,
+                                                wrongAttempts: widget.wrongAttempts,
+                                              ),
+                                            ),
+                                          );
+                                        }
+                                      },
+                                      child: const Text(
+                                        "Continue",
+                                        style: TextStyle(
+                                          fontSize: 15,
+                                          color: Color.fromARGB(255, 86, 29, 124),
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                              ],
-                            ),
-                          );
+                              );
+                            } else {
+                              // Show failure dialog
+                              showDialog(
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                  title: const Text(
+                                    "Try Again!",
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      color: Color.fromARGB(255, 86, 29, 124),
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  content: Text(
+                                    "That's not quite right. Keep looking!",
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      color: Color.fromARGB(255, 86, 29, 124),
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                        setState(() {
+                                          _isClicked = false;
+                                        });
+                                        // Navigate to next page without incrementing score
+                                        Navigator.pushReplacement(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => ISpyPage(
+                                              index: widget.index + 1,
+                                              objectsFound: widget.objectsFound, // Don't increment score
+                                              playerName: widget.playerName,
+                                              hasPreviousAnswers: widget.hasPreviousAnswers,
+                                              wrongAttempts: widget.wrongAttempts + 1,
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                      child: const Text(
+                                        "Continue",
+                                        style: TextStyle(
+                                          fontSize: 15,
+                                          color: Color.fromARGB(255, 86, 29, 124),
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }
+                          }
                         },
                         child: Container(
                           width: 50,
@@ -1412,6 +1491,7 @@ class _ISpyPageState extends State<ISpyPage> {
                                     playerName: widget.playerName,
                                     hasPreviousAnswers:
                                         widget.hasPreviousAnswers,
+                                    wrongAttempts: widget.wrongAttempts,
                                   ),
                                 ),
                               );
@@ -1451,6 +1531,7 @@ class _ISpyPageState extends State<ISpyPage> {
                                     playerName: widget.playerName,
                                     hasPreviousAnswers:
                                         widget.hasPreviousAnswers,
+                                    wrongAttempts: widget.wrongAttempts,
                                   ),
                                 ),
                               );
@@ -1494,13 +1575,15 @@ class _ISpyPageState extends State<ISpyPage> {
 
   // Game Over dialog that updates the leaderboard with the current player's score
   void _showFinalScore(BuildContext context) {
-    int score = widget.objectsFound;
-    double percentage = (score / ISpyPage.images.length) * 100;
-    int num = ISpyPage.images.length;
+    int maxScore = ISpyPage.images.length;
+    int finalScore = widget.objectsFound; // Use actual objects found
+    double percentage = (finalScore / maxScore) * 100;
 
-    LeaderboardData.addScore(widget.playerName, score);
+    // Add score to leaderboard
+    LeaderboardData.addScore(widget.playerName, finalScore);
+    
     int rank = LeaderboardData.scores.indexWhere((player) =>
-            player['name'] == widget.playerName && player['score'] == score) +
+            player['name'] == widget.playerName && player['score'] == finalScore) +
         1;
 
     showDialog(
@@ -1521,11 +1604,11 @@ class _ISpyPageState extends State<ISpyPage> {
               style: const TextStyle(fontSize: 25),
             ),
             Text(
-              'Objects Found: ${widget.objectsFound}',
+              'Objects Found: $finalScore',
               style: const TextStyle(fontSize: 25),
             ),
             Text(
-              'Score: $score/$num',
+              'Final Score: $finalScore/$maxScore',
               style: const TextStyle(fontSize: 25),
             ),
             Text(
